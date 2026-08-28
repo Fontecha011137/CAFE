@@ -1,0 +1,85 @@
+/* =========================
+   CAMBIAR CONTRASEÑA
+   ========================= */
+
+.btn-cambiar-password {
+  width: 100%;
+  padding: 13px;
+
+  border: 1px solid #7a7420;
+  border-radius: 8px;
+
+  background: #f8f1e6;
+  color: #4d4b00;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-cambiar-password:hover {
+  background: #e8dfcf;
+}
+
+.perfil-formulario h2 {
+  margin: 0 0 25px;
+
+  color: #4d4b00;
+
+  text-align: center;
+
+  font-size: 1.4rem;
+}
+
+
+/* =========================
+   MENSAJES
+   ========================= */
+
+.perfil-mensaje {
+  margin-top: 22px;
+
+  padding: 12px 15px;
+
+  border-radius: 8px;
+
+  text-align: center;
+
+  font-size: 0.9rem;
+}
+
+.perfil-mensaje-exito {
+  background: #edf3df;
+
+  border: 1px solid #b7c88b;
+
+  color: #4d5b20;
+}
+
+.perfil-mensaje-error {
+  background: #f9e7e4;
+
+  border: 1px solid #e0aaa3;
+
+  color: #913f35;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 520px) {
+
+  .perfil-formulario h2 {
+    font-size: 1.25rem;
+  }
+
+  .btn-cambiar-password {
+    padding: 12px;
+  }
+
+}

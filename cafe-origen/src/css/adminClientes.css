@@ -1,0 +1,309 @@
+/* =========================================
+   ADMIN - CLIENTES
+========================================= */
+
+.admin-clientes-page {
+  min-height: 100vh;
+  padding: 50px 6% 80px;
+  background: #f8f1e6;
+  color: #2f2a22;
+}
+
+.admin-clientes-contenedor {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+/* =========================================
+   ENCABEZADO
+========================================= */
+
+.admin-clientes-header {
+  margin-bottom: 35px;
+}
+
+.admin-clientes-header h1 {
+  margin: 0 0 10px;
+
+  color: #4d4b00;
+
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.admin-clientes-header p {
+  margin: 0;
+
+  color: #6b665e;
+
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   HERRAMIENTAS
+========================================= */
+
+.clientes-herramientas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  margin-bottom: 25px;
+}
+
+
+/* =========================================
+   BUSCADOR
+========================================= */
+
+.clientes-buscador {
+  flex: 1;
+}
+
+.clientes-buscador input {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 13px 16px;
+
+  background: white;
+
+  border: 1px solid #ddd4c7;
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 0.95rem;
+
+  box-sizing: border-box;
+}
+
+.clientes-buscador input:focus {
+  outline: none;
+
+  border-color: #4d4b00;
+
+  box-shadow:
+    0 0 0 3px rgba(77, 75, 0, 0.1);
+}
+
+
+/* =========================================
+   FILTROS
+========================================= */
+
+.clientes-filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.clientes-filtros button {
+  padding: 10px 14px;
+
+  background: white;
+
+  color: #4d4b00;
+
+  border: 1px solid #4d4b00;
+  border-radius: 20px;
+
+  cursor: pointer;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.clientes-filtros button:hover,
+.clientes-filtros button.activo {
+  background: #4d4b00;
+  color: white;
+}
+
+
+/* =========================================
+   TABLA
+========================================= */
+
+.clientes-tabla-contenedor {
+  width: 100%;
+
+  overflow-x: auto;
+
+  background: white;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 25px rgba(70, 55, 30, 0.08);
+}
+
+.clientes-tabla {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  min-width: 800px;
+}
+
+.clientes-tabla th {
+  padding: 16px;
+
+  text-align: left;
+
+  background: #4d4b00;
+
+  color: white;
+
+  font-size: 0.9rem;
+}
+
+.clientes-tabla td {
+  padding: 16px;
+
+  border-bottom: 1px solid #eee5d8;
+
+  color: #555;
+
+  font-size: 0.9rem;
+}
+
+.clientes-tabla tbody tr {
+  transition: background 0.2s ease;
+}
+
+.clientes-tabla tbody tr:hover {
+  background: #faf7f1;
+}
+
+
+/* =========================================
+   NOMBRE DEL CLIENTE
+========================================= */
+
+.cliente-nombre {
+  color: #4d4b00;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   ESTADO CLIENTE
+========================================= */
+
+.cliente-estado {
+  display: inline-block;
+
+  padding: 6px 11px;
+
+  border-radius: 20px;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cliente-estado.registrado {
+  background: #f1eee5;
+  color: #625d54;
+}
+
+.cliente-estado.comprador {
+  background: #eeefd8;
+  color: #4d4b00;
+}
+
+
+/* =========================================
+   BOTÓN VER INFORMACIÓN
+========================================= */
+
+.btn-ver-cliente {
+  padding: 8px 13px;
+
+  background: transparent;
+
+  color: #4d4b00;
+
+  border: 1px solid #4d4b00;
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-ver-cliente:hover {
+  background: #4d4b00;
+  color: white;
+}
+
+
+/* =========================================
+   SIN CLIENTES
+========================================= */
+
+.sin-clientes {
+  padding: 65px 30px;
+
+  text-align: center;
+
+  background: white;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 25px rgba(70, 55, 30, 0.08);
+}
+
+.sin-clientes h2 {
+  margin: 0 0 12px;
+
+  color: #4d4b00;
+}
+
+.sin-clientes p {
+  margin: 0;
+
+  color: #6b665e;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 750px) {
+  .admin-clientes-page {
+    padding: 35px 20px 60px;
+  }
+
+  .admin-clientes-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .clientes-herramientas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .clientes-buscador input {
+    max-width: none;
+  }
+}

@@ -1,0 +1,100 @@
+/* Reset general */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  background-color: #ffffff;
+
+  color: #2b2b2b;
+
+  min-height: 100vh;
+}
+
+
+/* Enlaces */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+/* Botones */
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+
+/* Imágenes */
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* Contenedor general */
+
+.container {
+
+  width: 100%;
+
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 0 20px;
+
+}
+
+
+/* Variables de colores */
+
+:root {
+
+  --color-cafe:
+    #4a4806;
+
+  --color-dorado:
+    #c89b3c;
+
+  --color-crema:
+    #f6efe5;
+
+  --color-texto:
+    #2b2b2b;
+
+  --color-blanco:
+    #ffffff;
+
+}
+
+
+/* Responsive móvil */
+
+@media (max-width: 768px) {
+
+  .container {
+
+    padding: 0 15px;
+
+  }
+
+}

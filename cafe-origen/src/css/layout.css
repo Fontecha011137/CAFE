@@ -1,0 +1,199 @@
+/* ===========================
+   NAVBAR
+=========================== */
+
+/* ===========================
+   ESTRUCTURA PRINCIPAL
+=========================== */
+
+html,
+body,
+#root {
+
+  min-height: 100%;
+
+}
+
+
+#root {
+
+  display: flex;
+
+  flex-direction: column;
+
+  min-height: 100vh;
+
+}
+
+
+.main-content {
+
+  flex: 1;
+
+  min-height: 70vh;
+
+}
+
+
+.navbar {
+
+  background: var(--color-cafe);
+
+  color: white;
+
+  width: 100%;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 1000;
+
+}
+
+
+.navbar-container {
+
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 15px 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+}
+
+
+.logo {
+
+  font-size: 1.3rem;
+
+  font-weight: bold;
+
+  color: white;
+
+}
+
+
+/* Botón hamburguesa */
+
+.menu-button {
+
+  background: none;
+
+  border: none;
+
+  color: white;
+
+  display: none;
+
+}
+
+
+/* Navegación */
+
+.nav-links {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+}
+
+
+.nav-links a {
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+}
+
+
+/* ===========================
+   FOOTER
+=========================== */
+
+
+.footer {
+
+  background: var(--color-cafe);
+
+  color:white;
+
+  margin-top:auto;
+
+}
+
+
+.footer-container {
+
+  max-width:1200px;
+
+  margin:auto;
+
+  padding:30px 20px;
+
+  text-align:center;
+
+}
+
+
+/* ===========================
+   MOBILE
+=========================== */
+
+
+@media(max-width:768px){
+
+
+  .menu-button {
+
+    display:block;
+
+  }
+
+
+  .nav-links {
+
+
+    position:absolute;
+
+    top:70px;
+
+    left:0;
+
+    width:100%;
+
+    background:var(--color-cafe);
+
+
+    display:none;
+
+    flex-direction:column;
+
+    padding:20px;
+
+
+  }
+
+
+  .nav-links.activo {
+
+    display:flex;
+
+  }
+
+
+}
