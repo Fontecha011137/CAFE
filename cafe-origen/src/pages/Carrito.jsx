@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import "../css/carrito.css";
 
 function Carrito() {
@@ -28,6 +29,7 @@ function Carrito() {
     );
   }, [carrito]);
 
+
   const aumentarCantidad = (id) => {
     const nuevoCarrito = carrito.map((producto) =>
       producto.id === id
@@ -40,6 +42,7 @@ function Carrito() {
 
     setCarrito(nuevoCarrito);
   };
+
 
   const disminuirCantidad = (id) => {
     const nuevoCarrito = carrito
@@ -56,6 +59,7 @@ function Carrito() {
     setCarrito(nuevoCarrito);
   };
 
+
   const eliminarProducto = (id) => {
     const nuevoCarrito = carrito.filter(
       (producto) => producto.id !== id
@@ -64,9 +68,11 @@ function Carrito() {
     setCarrito(nuevoCarrito);
   };
 
+
   const vaciarCarrito = () => {
     setCarrito([]);
   };
+
 
   const total = carrito.reduce(
     (acumulado, producto) =>
@@ -76,11 +82,13 @@ function Carrito() {
     0
   );
 
+
   const totalProductos = carrito.reduce(
     (acumulado, producto) =>
       acumulado + Number(producto.cantidad),
     0
   );
+
 
   const formatoPrecio = (valor) => {
     return new Intl.NumberFormat("es-CO", {
@@ -90,12 +98,14 @@ function Carrito() {
     }).format(valor);
   };
 
+
   const abrirModalEnvio = () => {
     setMostrarModalEnvio(true);
     setModoEnvio(null);
     setComentarioEnvio("");
     setMensajeModal("");
   };
+
 
   const cerrarModalEnvio = () => {
     setMostrarModalEnvio(false);
@@ -104,10 +114,12 @@ function Carrito() {
     setMensajeModal("");
   };
 
+
   const seleccionarAcordarEnvio = () => {
     setModoEnvio("acordar");
     setMensajeModal("");
   };
+
 
   const seleccionarPickup = () => {
     setModoEnvio("pickup");
@@ -117,6 +129,7 @@ function Carrito() {
     );
   };
 
+
   const enviarSolicitudEnvio = () => {
     const comentario = comentarioEnvio.trim();
 
@@ -124,13 +137,16 @@ function Carrito() {
       setMensajeModal(
         "Escribe un comentario para solicitar el envío."
       );
+
       return;
     }
 
     /*
       TEMPORAL:
-      Cuando conectemos Firebase,
-      aquí crearemos el pedido y la conversación.
+
+      Cuando conectemos Supabase,
+      aquí crearemos el pedido
+      y la conversación con el cliente.
     */
 
     const solicitudTemporal = {
@@ -153,32 +169,55 @@ function Carrito() {
     setComentarioEnvio("");
   };
 
+
   return (
     <div className="carrito-page">
 
+      {/* =========================
+          ENCABEZADO
+      ========================= */}
+
       <div className="carrito-titulo">
+
         <div>
-          <h1>Mi carrito</h1>
+
+          <h1>
+            Mi carrito
+          </h1>
 
           <p>
             Revisa tus cafés antes de finalizar
             la compra.
           </p>
+
         </div>
 
+
         {carrito.length > 0 && (
+
           <button
             className="btn-vaciar"
             onClick={vaciarCarrito}
           >
             Vaciar carrito
           </button>
+
         )}
+
       </div>
 
+
+      {/* =========================
+          CARRITO
+      ========================= */}
+
       {carrito.length === 0 ? (
+
         <div className="carrito-vacio">
-          <h2>Tu carrito está vacío</h2>
+
+          <h2>
+            Tu carrito está vacío
+          </h2>
 
           <p>
             Todavía no has agregado ningún café.
@@ -190,42 +229,61 @@ function Carrito() {
           >
             Ver nuestros cafés
           </Link>
+
         </div>
+
       ) : (
+
         <div className="carrito-contenedor">
+
+
+          {/* =========================
+              PRODUCTOS
+          ========================= */}
 
           <div className="carrito-lista">
 
             {carrito.map((producto) => (
+
               <div
                 className="carrito-producto"
                 key={producto.id}
               >
 
                 {producto.imagen && (
+
                   <div className="producto-imagen">
+
                     <img
                       src={producto.imagen}
                       alt={producto.nombre}
                     />
+
                   </div>
+
                 )}
 
+
                 <div className="producto-info">
+
                   <h2>
                     {producto.nombre}
                   </h2>
 
                   {producto.descripcion && (
+
                     <p>
                       {producto.descripcion}
                     </p>
+
                   )}
 
                   {producto.peso && (
+
                     <p>
                       Presentación: {producto.peso}
                     </p>
+
                   )}
 
                   <strong>
@@ -233,9 +291,14 @@ function Carrito() {
                       producto.precio
                     )}
                   </strong>
+
                 </div>
 
+
+                {/* CANTIDAD */}
+
                 <div className="producto-cantidad">
+
                   <button
                     onClick={() =>
                       disminuirCantidad(
@@ -259,9 +322,14 @@ function Carrito() {
                   >
                     +
                   </button>
+
                 </div>
 
+
+                {/* TOTAL PRODUCTO */}
+
                 <div className="producto-total">
+
                   <strong>
                     {formatoPrecio(
                       producto.precio *
@@ -279,19 +347,29 @@ function Carrito() {
                   >
                     Eliminar
                   </button>
+
                 </div>
 
               </div>
+
             ))}
 
           </div>
 
+
+          {/* =========================
+              RESUMEN
+          ========================= */}
+
           <div className="carrito-resumen">
+
             <h2>
               Resumen de compra
             </h2>
 
+
             <div className="resumen-fila">
+
               <span>
                 Productos
               </span>
@@ -299,9 +377,12 @@ function Carrito() {
               <span>
                 {totalProductos}
               </span>
+
             </div>
 
+
             <div className="resumen-fila">
+
               <span>
                 Subtotal
               </span>
@@ -309,13 +390,17 @@ function Carrito() {
               <span>
                 {formatoPrecio(total)}
               </span>
+
             </div>
+
 
             <p className="texto-envio">
               El costo del envío está por definir.
             </p>
 
+
             <div className="resumen-total">
+
               <span>
                 Total actual
               </span>
@@ -323,7 +408,9 @@ function Carrito() {
               <strong>
                 {formatoPrecio(total)}
               </strong>
+
             </div>
+
 
             <button
               className="btn-finalizar"
@@ -332,21 +419,33 @@ function Carrito() {
               Finalizar compra
             </button>
 
+
             <Link
               to="/"
               className="seguir-comprando"
             >
               Seguir comprando
             </Link>
+
           </div>
 
         </div>
+
       )}
 
+
+      {/* =========================
+          MODAL ENTREGA
+      ========================= */}
+
       {mostrarModalEnvio && (
+
         <div className="modal-overlay">
 
           <div className="modal-envio">
+
+
+            {/* CERRAR */}
 
             <button
               className="modal-cerrar"
@@ -356,13 +455,16 @@ function Carrito() {
               ×
             </button>
 
+
             <h2>
               Información de entrega
             </h2>
 
+
             <p className="modal-envio-destacado">
               El precio del envío todavía está por definir.
             </p>
+
 
             <p>
               Puedes hablar directamente con nosotros
@@ -370,7 +472,13 @@ function Carrito() {
               entrega.
             </p>
 
+
+            {/* =========================
+                OPCIONES
+            ========================= */}
+
             {!modoEnvio && (
+
               <div className="modal-envio-opciones">
 
                 <button
@@ -380,6 +488,7 @@ function Carrito() {
                   🚚 Acordar precio de envío
                 </button>
 
+
                 <button
                   className="btn-pickup"
                   onClick={seleccionarPickup}
@@ -388,9 +497,16 @@ function Carrito() {
                 </button>
 
               </div>
+
             )}
 
+
+            {/* =========================
+                SOLICITAR ENVÍO
+            ========================= */}
+
             {modoEnvio === "acordar" && (
+
               <div className="solicitud-envio">
 
                 <h3>
@@ -403,6 +519,7 @@ function Carrito() {
                   que nos ayude a calcular el envío.
                 </p>
 
+
                 <textarea
                   value={comentarioEnvio}
                   onChange={(e) =>
@@ -412,6 +529,7 @@ function Carrito() {
                   }
                   placeholder="Ejemplo: Quiero envío a Suba, barrio La Campiña. ¿Cuánto cuesta?"
                 />
+
 
                 <div className="solicitud-envio-botones">
 
@@ -425,6 +543,7 @@ function Carrito() {
                     Volver
                   </button>
 
+
                   <button
                     className="btn-enviar-solicitud"
                     onClick={enviarSolicitudEnvio}
@@ -435,21 +554,70 @@ function Carrito() {
                 </div>
 
               </div>
+
             )}
 
+
+            {/* =========================
+                RECOGER EN PUNTO
+            ========================= */}
+
             {modoEnvio === "pickup" && (
+
               <div className="pickup-info">
 
                 <h3>
                   Recoger en punto
                 </h3>
 
+
                 <p>
                   No se agregará costo de envío.
-                  Más adelante podremos mostrar aquí
-                  la dirección y horario del punto
-                  de recogida.
+                  Puedes recoger tu pedido directamente
+                  en nuestro punto de entrega.
                 </p>
+
+
+                {/* DIRECCIÓN */}
+
+                <div className="pickup-direccion">
+
+                  <span className="pickup-icono">
+                    📍
+                  </span>
+
+                  <div>
+
+                    <span className="pickup-label">
+                      Punto de recogida
+                    </span>
+
+                    <strong>
+                      Calle 8A # 82-31
+                    </strong>
+
+                    <span>
+                      Bogotá, Colombia
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* WAZE */}
+
+                <a
+                  href="https://www.waze.com/ul?q=Calle%208A%20%23%2082-31%20Bogota%20Colombia&navigate=yes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-waze"
+                >
+                  🚗 Cómo llegar con Waze
+                </a>
+
+
+                {/* CAMBIAR OPCIÓN */}
 
                 <button
                   className="btn-volver-modal"
@@ -462,17 +630,26 @@ function Carrito() {
                 </button>
 
               </div>
+
             )}
 
+
+            {/* =========================
+                MENSAJE
+            ========================= */}
+
             {mensajeModal && (
+
               <div className="mensaje-modal-envio">
                 {mensajeModal}
               </div>
+
             )}
 
           </div>
 
         </div>
+
       )}
 
     </div>

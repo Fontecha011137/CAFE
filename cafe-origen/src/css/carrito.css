@@ -800,7 +800,158 @@
   border-radius: 16px;
 }
 
+/* =========================
+   DIRECCIÓN PUNTO DE RECOGIDA
+========================= */
 
+.pickup-direccion {
+  margin: 20px 0 16px;
+
+  padding: 16px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfd3c1;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 5px 14px
+    rgba(70, 55, 30, 0.06);
+}
+
+
+.pickup-icono {
+  width: 46px;
+  height: 46px;
+
+  min-width: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3eadb;
+
+  border-radius: 50%;
+
+  font-size: 1.35rem;
+}
+
+
+.pickup-direccion > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  text-align: left;
+}
+
+
+.pickup-label {
+  color: #7a746a;
+
+  font-size: 0.78rem;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+
+.pickup-direccion strong {
+  color: #4d4b00;
+
+  font-size: 1.05rem;
+
+  line-height: 1.3;
+}
+
+
+.pickup-direccion div > span:last-child {
+  color: #666666;
+
+  font-size: 0.9rem;
+}
+
+
+/* =========================
+   BOTÓN WAZE
+========================= */
+
+.btn-waze {
+  width: 100%;
+
+  min-height: 50px;
+
+  margin-bottom: 12px;
+
+  padding: 13px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  background: #33ccff;
+
+  color: #16333d;
+
+  border: none;
+
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  font-size: 0.95rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 16px
+    rgba(51, 204, 255, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+
+.btn-waze:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 20px
+    rgba(51, 204, 255, 0.26);
+
+  filter: brightness(0.97);
+}
+
+
+/* =========================
+   BOTÓN CAMBIAR OPCIÓN
+   DENTRO DEL PICKUP
+========================= */
+
+.pickup-info .btn-volver-modal {
+  width: 100%;
+
+  margin-top: 2px;
+}
 /* =========================
    MENSAJE MODAL
 ========================= */
