@@ -9,27 +9,28 @@ function Admin() {
         <h1>Panel Administrador</h1>
 
         <p>
-          Gestiona pedidos, clientes y conversaciones de envío.
+          Gestiona pedidos, clientes y consultas de los usuarios.
         </p>
       </div>
 
       <div className="admin-opciones">
 
         <Link
-          to="/admin/conversaciones"
+          to="/admin/consultas"
           className="admin-card"
         >
-          <h2>Conversaciones</h2>
+          <h2>Consultas</h2>
 
           <p>
-            Habla con los clientes y acuerda el método
-            y precio del envío.
+            Responde preguntas sobre productos y
+            solicitudes relacionadas con el envío.
           </p>
 
           <span>
-            Ir a conversaciones →
+            Ver consultas →
           </span>
         </Link>
+
 
         <Link
           to="/admin/pedidos"
@@ -46,6 +47,7 @@ function Admin() {
             Ver pedidos →
           </span>
         </Link>
+
 
         <Link
           to="/admin/clientes"

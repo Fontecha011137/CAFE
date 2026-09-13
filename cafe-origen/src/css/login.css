@@ -1,0 +1,423 @@
+/* =========================================================
+   LOGIN - PÁGINA
+========================================================= */
+
+.login-page {
+  min-height: calc(100vh - 160px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 60px 20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9 0%,
+      #f3eadb 100%
+    );
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TARJETA
+========================================================= */
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+
+  padding: 38px;
+
+  background: #fffdf9;
+
+  border:
+    1px solid
+    rgba(90, 50, 29, 0.16);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 15px 40px
+    rgba(70, 40, 20, 0.12);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ICONO
+========================================================= */
+
+.login-icono {
+  margin-bottom: 10px;
+
+  text-align: center;
+
+  font-size: 3rem;
+}
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.login-card h1 {
+  margin:
+    0
+    0
+    10px;
+
+  text-align: center;
+
+  color: #4a2513;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 2.2rem;
+}
+
+
+/* =========================================================
+   DESCRIPCIÓN
+========================================================= */
+
+.login-descripcion {
+  margin:
+    0
+    0
+    28px;
+
+  text-align: center;
+
+  color: #666666;
+
+  font-size: 0.98rem;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.login-card form {
+  width: 100%;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.login-campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  margin-bottom: 18px;
+}
+
+.login-campo label {
+  color: #4a2513;
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+}
+
+.login-campo input {
+  width: 100%;
+
+  min-height: 48px;
+
+  padding:
+    12px
+    14px;
+
+  background: #ffffff;
+
+  color: #333333;
+
+  border:
+    1px solid
+    #d8cdbd;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 1rem;
+
+  font-family: inherit;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.login-campo input::placeholder {
+  color: #999999;
+}
+
+.login-campo input:focus {
+  border-color: #5f6500;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(95, 101, 0, 0.12);
+}
+
+
+/* =========================================================
+   RECUPERAR CONTRASEÑA
+========================================================= */
+
+.login-recuperar {
+  margin:
+    -4px
+    0
+    20px;
+
+  text-align: right;
+}
+
+.login-recuperar button {
+  padding: 0;
+
+  background: transparent;
+
+  color: #5f6500;
+
+  border: none;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.login-recuperar button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.login-recuperar button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MENSAJE
+========================================================= */
+
+.login-mensaje {
+  margin-bottom: 18px;
+
+  padding:
+    11px
+    13px;
+
+  background: #f8f4e8;
+
+  color: #604321;
+
+  border:
+    1px solid
+    #e2d7be;
+
+  border-radius: 8px;
+
+  font-size: 0.9rem;
+
+  line-height: 1.45;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   BOTÓN INGRESAR
+========================================================= */
+
+.login-btn {
+  width: 100%;
+
+  min-height: 50px;
+
+  padding:
+    12px
+    18px;
+
+  background: #4d4b00;
+
+  color: #ffffff;
+
+  border: none;
+
+  border-radius: 8px;
+
+  font-size: 1rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #676400;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 6px 16px
+    rgba(77, 75, 0, 0.18);
+}
+
+.login-btn:active:not(:disabled) {
+  transform:
+    translateY(0);
+}
+
+.login-btn:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.login-footer {
+  margin-top: 24px;
+
+  padding-top: 20px;
+
+  border-top:
+    1px solid
+    #e8dfd1;
+
+  text-align: center;
+}
+
+.login-footer p {
+  margin:
+    0
+    0
+    7px;
+
+  color: #666666;
+}
+
+
+/* =========================================================
+   BOTÓN CREAR CUENTA
+========================================================= */
+
+.login-register-btn {
+  padding: 4px 8px;
+
+  background: transparent;
+
+  color: #4d4b00;
+
+  border: none;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.login-register-btn:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   VOLVER AL INICIO
+========================================================= */
+
+.login-volver {
+  width: 100%;
+
+  margin-top: 18px;
+
+  padding: 9px;
+
+  background: transparent;
+
+  color: #6d6d6d;
+
+  border: none;
+
+  font-size: 0.9rem;
+
+  cursor: pointer;
+}
+
+.login-volver:hover {
+  color: #4d4b00;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   MÓVIL
+========================================================= */
+
+@media (max-width: 500px) {
+
+  .login-page {
+    padding:
+      35px
+      14px;
+  }
+
+  .login-card {
+    padding:
+      30px
+      20px;
+
+    border-radius: 14px;
+  }
+
+  .login-icono {
+    font-size: 2.6rem;
+  }
+
+  .login-card h1 {
+    font-size: 1.9rem;
+  }
+
+  .login-descripcion {
+    font-size: 0.92rem;
+  }
+
+  .login-campo input {
+    min-height: 46px;
+  }
+
+}

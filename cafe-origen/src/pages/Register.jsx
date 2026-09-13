@@ -3,8 +3,6 @@ import "../css/register.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { auth, db } from "../firebaseConfig";
-
 import {
   createUserWithEmailAndPassword
 } from "firebase/auth";
@@ -15,11 +13,20 @@ import {
   serverTimestamp
 } from "firebase/firestore";
 
+import {
+  auth,
+  db
+} from "../firebaseConfig";
+
 
 function Register() {
 
   const navigate = useNavigate();
 
+
+  // =====================================================
+  // ESTADOS
+  // =====================================================
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -29,28 +36,116 @@ function Register() {
     confirmarPassword: ""
   });
 
+  const [mensaje, setMensaje] =
+    useState("");
 
-  const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] =
+    useState(false);
 
+
+  // =====================================================
+  // MANEJAR CAMBIOS
+  // =====================================================
 
   const handleChange = (e) => {
 
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const {
+      name,
+      value
+    } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
 
   };
 
+
+  // =====================================================
+  // REGISTRAR USUARIO
+  // =====================================================
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
 
-    if(formData.password !== formData.confirmarPassword){
+    if (cargando) {
+      return;
+    }
 
-      setMensaje("Las contraseñas no coinciden");
+
+    const nombre =
+      formData.nombre.trim();
+
+    const celular =
+      formData.celular.trim();
+
+    const email =
+      formData.email
+        .trim()
+        .toLowerCase();
+
+
+    // ===================================================
+    // VALIDAR NOMBRE
+    // ===================================================
+
+    if (nombre.length < 3) {
+
+      setMensaje(
+        "Ingresa un nombre válido."
+      );
+
+      return;
+
+    }
+
+
+    // ===================================================
+    // VALIDAR CELULAR
+    // ===================================================
+
+    if (!/^[0-9]{10}$/.test(celular)) {
+
+      setMensaje(
+        "Ingrese un número de celular válido de 10 dígitos."
+      );
+
+      return;
+
+    }
+
+
+    // ===================================================
+    // VALIDAR CONTRASEÑA
+    // ===================================================
+
+    if (formData.password.length < 6) {
+
+      setMensaje(
+        "La contraseña debe tener al menos 6 caracteres."
+      );
+
+      return;
+
+    }
+
+
+    // ===================================================
+    // VALIDAR CONFIRMACIÓN
+    // ===================================================
+
+    if (
+      formData.password !==
+      formData.confirmarPassword
+    ) {
+
+      setMensaje(
+        "Las contraseñas no coinciden."
+      );
+
       return;
 
     }
@@ -58,53 +153,147 @@ function Register() {
 
     try {
 
+      setCargando(true);
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
+      setMensaje("");
+
+
+      // =================================================
+      // CREAR USUARIO EN FIREBASE AUTH
+      // =================================================
+
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          formData.password
+        );
+
+
+      const user =
+        userCredential.user;
+
+
+      // =================================================
+      // GUARDAR PERFIL EN FIRESTORE
+      // =================================================
+
+      await setDoc(
+        doc(
+          db,
+          "usuarios",
+          user.uid
+        ),
+        {
+
+          nombre,
+
+          celular,
+
+          email,
+
+          rol: "cliente",
+
+          creado:
+            serverTimestamp()
+
+        }
       );
 
 
-      const user = userCredential.user;
+      // =================================================
+      // MENSAJE
+      // =================================================
+
+      setMensaje(
+        `Bienvenido ${nombre}. Tu cuenta fue creada correctamente.`
+      );
 
 
-      await setDoc(doc(db, "usuarios", user.uid), {
+      // =================================================
+      // REDIRECCIÓN AL HOME
+      // =================================================
 
-        nombre: formData.nombre,
-        celular: formData.celular,
-        email: formData.email,
-        creado: serverTimestamp()
+      setTimeout(() => {
 
-      });
+        navigate("/");
 
-
-      setMensaje("Registro exitoso");
+      }, 1000);
 
 
-      setTimeout(()=>{
+    } catch (error) {
 
-        navigate("/login");
+      console.error(
+        "Error registrando usuario:",
+        error
+      );
 
-      },1500);
+
+      // =================================================
+      // ERRORES FIREBASE
+      // =================================================
+
+      if (
+        error.code ===
+        "auth/email-already-in-use"
+      ) {
+
+        setMensaje(
+          "Este correo electrónico ya está registrado."
+        );
+
+      } else if (
+        error.code ===
+        "auth/invalid-email"
+      ) {
+
+        setMensaje(
+          "El correo electrónico no es válido."
+        );
+
+      } else if (
+        error.code ===
+        "auth/weak-password"
+      ) {
+
+        setMensaje(
+          "La contraseña es demasiado débil."
+        );
+
+      } else if (
+        error.code ===
+        "auth/network-request-failed"
+      ) {
+
+        setMensaje(
+          "No fue posible conectarse. Verifica tu conexión a Internet."
+        );
+
+      } else {
+
+        setMensaje(
+          "No fue posible crear la cuenta. Intenta nuevamente."
+        );
+
+      }
 
 
+    } finally {
 
-    } catch(error){
-
-      console.log(error);
-
-      setMensaje(error.message);
+      setCargando(false);
 
     }
 
   };
 
 
+  // =====================================================
+  // INTERFAZ
+  // =====================================================
+
   return (
 
     <div className="register-page">
-
 
       <div className="register-card">
 
@@ -114,8 +303,16 @@ function Register() {
         </h1>
 
 
+        <p>
+          Regístrate para comprar nuestros cafés
+          y gestionar tus pedidos.
+        </p>
+
+
         <form onSubmit={handleSubmit}>
 
+
+          {/* NOMBRE */}
 
           <input
             type="text"
@@ -123,9 +320,12 @@ function Register() {
             placeholder="Nombre completo"
             value={formData.nombre}
             onChange={handleChange}
+            autoComplete="name"
             required
           />
 
+
+          {/* CELULAR */}
 
           <input
             type="tel"
@@ -133,9 +333,14 @@ function Register() {
             placeholder="Celular"
             value={formData.celular}
             onChange={handleChange}
+            maxLength={10}
+            inputMode="numeric"
+            autoComplete="tel"
             required
           />
 
+
+          {/* CORREO */}
 
           <input
             type="email"
@@ -143,9 +348,12 @@ function Register() {
             placeholder="Correo electrónico"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="email"
             required
           />
 
+
+          {/* CONTRASEÑA */}
 
           <input
             type="password"
@@ -153,9 +361,13 @@ function Register() {
             placeholder="Contraseña"
             value={formData.password}
             onChange={handleChange}
+            minLength={6}
+            autoComplete="new-password"
             required
           />
 
+
+          {/* CONFIRMAR CONTRASEÑA */}
 
           <input
             type="password"
@@ -163,34 +375,55 @@ function Register() {
             placeholder="Confirmar contraseña"
             value={formData.confirmarPassword}
             onChange={handleChange}
+            minLength={6}
+            autoComplete="new-password"
             required
           />
 
 
-          <button type="submit">
-            Registrarme
-          </button>
+          {/* BOTÓN REGISTRO */}
 
+          <button
+            type="submit"
+            disabled={cargando}
+          >
+
+            {
+              cargando
+                ? "Creando cuenta..."
+                : "Registrarme"
+            }
+
+          </button>
 
         </form>
 
 
-        {
-          mensaje &&
-          <p>{mensaje}</p>
-        }
+        {/* MENSAJE */}
+
+        {mensaje && (
+
+          <p className="register-mensaje">
+            {mensaje}
+          </p>
+
+        )}
 
 
-        <button 
+        {/* YA TENGO CUENTA */}
+
+        <button
+          type="button"
           className="volver"
-          onClick={()=>navigate("/login")}
+          onClick={() =>
+            navigate("/login")
+          }
         >
           Ya tengo cuenta
         </button>
 
 
       </div>
-
 
     </div>
 

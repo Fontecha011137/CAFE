@@ -419,7 +419,7 @@ function Perfil() {
             : "U"}
         </div>
 
-        <h1>Mi cuenta</h1>
+        <h1>Mi Perfil</h1>
 
         <p className="perfil-bienvenida">
           Bienvenido a Café de Origen Colombia

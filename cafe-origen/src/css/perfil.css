@@ -1,28 +1,331 @@
-/* =========================
+/* =========================================================
+   PERFIL - PÁGINA
+========================================================= */
+
+.perfil-page {
+  width: 100%;
+  min-height: calc(100vh - 160px);
+
+  padding: 60px 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  background: linear-gradient(
+    180deg,
+    #fffdf9 0%,
+    #f4ecdf 100%
+  );
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TARJETA PRINCIPAL
+========================================================= */
+
+.perfil-card {
+  width: 100%;
+  max-width: 760px;
+
+  padding: 40px;
+
+  background: #fffdf9;
+
+  border: 1px solid rgba(90, 50, 29, 0.14);
+  border-radius: 18px;
+
+  box-shadow: 0 16px 40px rgba(70, 40, 20, 0.10);
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.perfil-avatar {
+  width: 86px;
+  height: 86px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    145deg,
+    #5f6500,
+    #414600
+  );
+
+  color: #ffffff;
+
+  border: 5px solid #f3eadb;
+  border-radius: 50%;
+
+  font-size: 2rem;
+  font-weight: 800;
+
+  box-shadow: 0 8px 20px rgba(77, 75, 0, 0.18);
+}
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.perfil-card h1 {
+  margin: 0 0 8px;
+
+  color: #4a2513;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 2.4rem;
+}
+
+
+/* =========================================================
+   BIENVENIDA
+========================================================= */
+
+.perfil-bienvenida {
+  margin: 0 0 30px;
+
+  color: #6b6259;
+
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   DATOS
+========================================================= */
+
+.perfil-datos {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+
+  margin-bottom: 28px;
+}
+
+
+.perfil-dato {
+  min-height: 120px;
+
+  padding: 18px 16px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background: #f8f4ea;
+
+  border: 1px solid #e5dac6;
+  border-radius: 12px;
+
+  text-align: left;
+}
+
+
+.perfil-dato span {
+  margin-bottom: 8px;
+
+  color: #847768;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+
+.perfil-dato strong {
+  color: #4a2513;
+
+  font-size: 1rem;
+
+  line-height: 1.4;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   OPCIONES
+========================================================= */
+
+.perfil-opciones {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 12px;
+
+  margin-top: 8px;
+}
+
+
+/* =========================================================
+   EDITAR PERFIL
+========================================================= */
+
+.btn-editar-perfil {
+  width: 100%;
+
+  padding: 13px;
+
+  background: #4d4b00;
+  color: #ffffff;
+
+  border: 1px solid #4d4b00;
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-editar-perfil:hover {
+  background: #676400;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 15px rgba(77, 75, 0, 0.18);
+}
+
+
+/* =========================================================
    CAMBIAR CONTRASEÑA
-   ========================= */
+========================================================= */
 
 .btn-cambiar-password {
   width: 100%;
-  padding: 13px;
 
-  border: 1px solid #7a7420;
-  border-radius: 8px;
+  padding: 13px;
 
   background: #f8f1e6;
   color: #4d4b00;
+
+  border: 1px solid #7a7420;
+  border-radius: 8px;
 
   font-size: 0.95rem;
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn-cambiar-password:hover {
   background: #e8dfcf;
+
+  transform: translateY(-1px);
 }
+
+
+/* =========================================================
+   MIS PEDIDOS
+========================================================= */
+
+.btn-pedidos {
+  width: 100%;
+
+  padding: 13px;
+
+  background: #fffdf9;
+  color: #4a2513;
+
+  border: 1px solid #cdbd9e;
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-pedidos:hover {
+  background: #f5ecdc;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+.perfil-opciones .btn-cerrar-sesion {
+  width: 100%;
+
+  padding: 13px;
+
+  background: #fff7f6;
+  color: #9a3d35;
+
+  border: 1px solid #d9a7a1;
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.perfil-opciones .btn-cerrar-sesion:hover {
+  background: #f6dfdc;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.perfil-formulario {
+  margin-top: 10px;
+
+  padding: 28px 24px;
+
+  background: #f8f4ea;
+
+  border: 1px solid #e5dac6;
+  border-radius: 14px;
+
+  text-align: left;
+}
+
 
 .perfil-formulario h2 {
   margin: 0 0 25px;
@@ -31,13 +334,150 @@
 
   text-align: center;
 
-  font-size: 1.4rem;
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 1.5rem;
 }
 
 
-/* =========================
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.perfil-campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  margin-bottom: 18px;
+}
+
+
+.perfil-campo label {
+  color: #4a2513;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+
+.perfil-campo input {
+  width: 100%;
+  min-height: 46px;
+
+  padding: 11px 13px;
+
+  background: #ffffff;
+  color: #333333;
+
+  border: 1px solid #d5c8b2;
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 1rem;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.perfil-campo input:focus {
+  border-color: #5f6500;
+
+  box-shadow: 0 0 0 3px rgba(95, 101, 0, 0.12);
+}
+
+
+.perfil-campo input:disabled {
+  background: #eee9df;
+
+  color: #777777;
+
+  cursor: not-allowed;
+}
+
+
+.perfil-campo small {
+  color: #7a7168;
+
+  font-size: 0.78rem;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   BOTONES EDICIÓN
+========================================================= */
+
+.perfil-botones-edicion {
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+
+.btn-guardar,
+.btn-cancelar {
+  flex: 1;
+
+  min-height: 46px;
+
+  padding: 11px 16px;
+
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.btn-guardar {
+  background: #4d4b00;
+  color: #ffffff;
+
+  border: none;
+}
+
+
+.btn-guardar:hover:not(:disabled) {
+  background: #676400;
+}
+
+
+.btn-cancelar {
+  background: #ffffff;
+  color: #6d6255;
+
+  border: 1px solid #cbbca5;
+}
+
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #f1eadf;
+}
+
+
+.btn-guardar:disabled,
+.btn-cancelar:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
    MENSAJES
-   ========================= */
+========================================================= */
 
 .perfil-mensaje {
   margin-top: 22px;
@@ -49,7 +489,9 @@
   text-align: center;
 
   font-size: 0.9rem;
+  line-height: 1.45;
 }
+
 
 .perfil-mensaje-exito {
   background: #edf3df;
@@ -58,6 +500,7 @@
 
   color: #4d5b20;
 }
+
 
 .perfil-mensaje-error {
   background: #f9e7e4;
@@ -68,18 +511,93 @@
 }
 
 
-/* =========================
-   RESPONSIVE
-   ========================= */
+/* =========================================================
+   CARGANDO
+========================================================= */
+
+.perfil-cargando {
+  min-height: calc(100vh - 160px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fffdf9;
+
+  color: #4d4b00;
+
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .perfil-page {
+    padding: 45px 18px;
+  }
+
+  .perfil-card {
+    padding: 34px 26px;
+  }
+
+  .perfil-datos {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-opciones {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+
+/* =========================================================
+   MÓVIL
+========================================================= */
 
 @media (max-width: 520px) {
 
-  .perfil-formulario h2 {
-    font-size: 1.25rem;
+  .perfil-page {
+    padding: 28px 12px;
   }
 
-  .btn-cambiar-password {
-    padding: 12px;
+  .perfil-card {
+    padding: 28px 18px;
+
+    border-radius: 14px;
+  }
+
+  .perfil-avatar {
+    width: 74px;
+    height: 74px;
+
+    font-size: 1.7rem;
+  }
+
+  .perfil-card h1 {
+    font-size: 2rem;
+  }
+
+  .perfil-opciones {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-formulario {
+    padding: 22px 16px;
+  }
+
+  .perfil-botones-edicion {
+    flex-direction: column;
+  }
+
+  .btn-guardar,
+  .btn-cancelar {
+    width: 100%;
   }
 
 }

@@ -9,6 +9,63 @@
 
 
 /* ===========================
+   SALUDO USUARIO
+=========================== */
+
+.saludo-usuario {
+  width: 100%;
+
+  padding: 16px 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f3eadb 0%,
+      #fffdf9 50%,
+      #f3eadb 100%
+    );
+
+  border-top:
+    1px solid
+    rgba(77, 75, 0, 0.12);
+
+  border-bottom:
+    1px solid
+    rgba(77, 75, 0, 0.18);
+
+  box-shadow:
+    0 4px 12px
+    rgba(83, 53, 24, 0.05);
+
+  box-sizing: border-box;
+}
+
+
+.saludo-usuario span {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  color: #4a2513;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  letter-spacing: 0.1px;
+}
+
+
+/* ===========================
    HERO
 =========================== */
 
@@ -855,6 +912,20 @@
 
 @media (max-width: 768px) {
 
+  .saludo-usuario {
+    padding:
+      14px
+      20px;
+  }
+
+
+  .saludo-usuario span {
+    font-size: 1.1rem;
+
+    text-align: center;
+  }
+
+
   .hero {
     min-height: auto;
 
@@ -1054,6 +1125,20 @@
 =========================== */
 
 @media (max-width: 500px) {
+
+  .saludo-usuario {
+    padding:
+      12px
+      15px;
+  }
+
+
+  .saludo-usuario span {
+    font-size: 1rem;
+
+    text-align: center;
+  }
+
 
   .hero-text {
     padding:
@@ -1332,6 +1417,18 @@
 =========================== */
 
 @media (max-width: 380px) {
+
+  .saludo-usuario {
+    padding:
+      11px
+      12px;
+  }
+
+
+  .saludo-usuario span {
+    font-size: 0.95rem;
+  }
+
 
   .hero-text h1 {
     font-size: 2.15rem;
