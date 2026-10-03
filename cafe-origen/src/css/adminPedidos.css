@@ -256,3 +256,416 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   RESUMEN SUPERIOR DE PEDIDOS
+   ========================================================= */
+
+.pedidos-resumen {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto 24px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.pedido-resumen-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  min-height: 82px;
+
+  box-sizing: border-box;
+
+  padding: 17px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e7dac5;
+  border-radius: 15px;
+
+  box-shadow:
+    0 6px 18px rgba(68, 43, 27, 0.06);
+}
+
+.pedido-resumen-card > svg {
+  width: 24px;
+  height: 24px;
+
+  flex-shrink: 0;
+
+  padding: 10px;
+
+  background: #f5f0dd;
+
+  border-radius: 11px;
+
+  color: #626400;
+}
+
+.pedido-resumen-card div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.pedido-resumen-card strong {
+  color: #432719;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+.pedido-resumen-card span {
+  color: #806858;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   FILTROS
+   TODOS / PENDIENTES / DESPACHADOS
+   ========================================================= */
+
+.pedidos-filtros {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+}
+
+.pedidos-filtros button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
+  padding: 0 17px;
+
+  border: 1px solid #dfd1bb;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #5d4435;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 12px rgba(68, 43, 27, 0.05);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pedidos-filtros button svg {
+  width: 17px;
+  height: 17px;
+
+  flex-shrink: 0;
+}
+
+.pedidos-filtros button > span {
+  min-width: 24px;
+  height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: #f3eddf;
+  color: #646500;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.pedidos-filtros button:hover {
+  border-color: #777800;
+
+  color: #5b5c00;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 7px 16px rgba(68, 43, 27, 0.09);
+}
+
+
+/* FILTRO SELECCIONADO */
+
+.pedidos-filtros button.activo {
+  background: #5b5d00;
+  border-color: #5b5d00;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 7px 17px rgba(91, 93, 0, 0.20);
+}
+
+.pedidos-filtros button.activo > span {
+  background: rgba(255, 255, 255, 0.18);
+
+  color: #ffffff;
+}
+
+.pedidos-filtros button.activo svg {
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   BOTÓN MARCAR COMO DESPACHADO
+   ========================================================= */
+
+.admin-pedido-acciones {
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 25px 22px;
+}
+
+.btn-despachar {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  padding: 0 18px;
+
+  border: 1px solid #626400;
+  border-radius: 11px;
+
+  background: #626400;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 6px 15px rgba(98, 100, 0, 0.18);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-despachar svg {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+.btn-despachar:hover:not(:disabled) {
+  background: #4d4f00;
+  border-color: #4d4f00;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 19px rgba(98, 100, 0, 0.25);
+}
+
+.btn-despachar:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-despachar:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   PEDIDO YA DESPACHADO
+   ========================================================= */
+
+.btn-despachado {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  padding: 0 18px;
+
+  border: 1px solid #b8ddc3;
+  border-radius: 11px;
+
+  background: #eaf7ee;
+  color: #26733e;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.btn-despachado svg {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   ETIQUETAS DE ESTADO
+   ========================================================= */
+
+.admin-pedido-estado.pendiente {
+  background: #f8f2dc;
+
+  border-color: #dfd39d;
+
+  color: #656600;
+}
+
+.admin-pedido-estado.despachado {
+  background: #eaf7ee;
+
+  border-color: #b9ddc3;
+
+  color: #26733e;
+}
+
+
+/* Pedido despachado:
+   cambia la línea superior de la tarjeta */
+
+.admin-pedido-card.estado-despachado::before {
+  background: #379252;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .pedidos-resumen {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .pedidos-resumen {
+    gap: 10px;
+
+    margin-bottom: 18px;
+  }
+
+
+  .pedido-resumen-card {
+    min-height: 70px;
+
+    padding: 13px 15px;
+  }
+
+
+  .pedidos-filtros {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+  }
+
+
+  .pedidos-filtros button {
+    width: 100%;
+
+    min-height: 43px;
+
+    padding: 0 11px;
+
+    font-size: 12px;
+  }
+
+
+  .pedidos-filtros button:first-child {
+    grid-column: 1 / -1;
+  }
+
+
+  .admin-pedido-acciones {
+    padding:
+      0 18px
+      18px;
+  }
+
+
+  .btn-despachar,
+  .btn-despachado {
+    min-height: 48px;
+  }
+
+}
