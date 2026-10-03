@@ -23,18 +23,19 @@ function Perfil() {
   const navigate = useNavigate();
 
   const [usuario, setUsuario] = useState(null);
+const [perfil, setPerfil] = useState({
+  nombre: "",
+  celular: "",
+  direccion: "",
+  email: ""
+});
 
-  const [perfil, setPerfil] = useState({
-    nombre: "",
-    celular: "",
-    email: ""
-  });
-
-  const [formData, setFormData] = useState({
-    nombre: "",
-    celular: "",
-    email: ""
-  });
+const [formData, setFormData] = useState({
+  nombre: "",
+  celular: "",
+  direccion: "",
+  email: ""
+});
 
   const [passwordData, setPasswordData] = useState({
     passwordActual: "",
@@ -73,20 +74,23 @@ function Perfil() {
           if (documento.exists()) {
             const datos = documento.data();
 
-            const datosPerfil = {
-              nombre: datos.nombre || "",
-              celular: datos.celular || "",
-              email: datos.email || user.email || ""
-            };
+           const datosPerfil = {
+  nombre: datos.nombre || "",
+  celular: datos.celular || "",
+  direccion: datos.direccion || "",
+  email: datos.email || user.email || ""
+};
 
             setPerfil(datosPerfil);
             setFormData(datosPerfil);
           } else {
-            const datosPerfil = {
-              nombre: "",
-              celular: "",
-              email: user.email || ""
-            };
+           const datosPerfil = {
+  nombre: "",
+  celular: "",
+  direccion: "",
+  email: user.email || ""
+};
+            
 
             setPerfil(datosPerfil);
             setFormData(datosPerfil);
@@ -215,16 +219,18 @@ function Perfil() {
         usuario.uid
       );
 
-      await updateDoc(referencia, {
-        nombre: formData.nombre.trim(),
-        celular: formData.celular.trim()
-      });
+     await updateDoc(referencia, {
+  nombre: formData.nombre.trim(),
+  celular: formData.celular.trim(),
+  direccion: formData.direccion.trim()
+});
 
       const perfilActualizado = {
-        ...perfil,
-        nombre: formData.nombre.trim(),
-        celular: formData.celular.trim()
-      };
+  ...perfil,
+  nombre: formData.nombre.trim(),
+  celular: formData.celular.trim(),
+  direccion: formData.direccion.trim()
+};
 
       setPerfil(perfilActualizado);
       setFormData(perfilActualizado);
@@ -458,6 +464,20 @@ function Perfil() {
                 </strong>
               </div>
 
+              {/* DIRECCIÓN */}
+
+<div className="perfil-dato perfil-dato-direccion">
+
+  <span>
+    Dirección de entrega
+  </span>
+
+  <strong>
+    {perfil.direccion || "No registrada"}
+  </strong>
+
+</div>
+
             </div>
 
             <div className="perfil-opciones">
@@ -539,6 +559,29 @@ function Perfil() {
               />
 
             </div>
+
+            <div className="perfil-campo">
+
+  <label htmlFor="direccion">
+    Dirección de entrega
+  </label>
+
+  <input
+    id="direccion"
+    type="text"
+    name="direccion"
+    value={formData.direccion}
+    onChange={handleChange}
+    placeholder="Ej. Calle 123 # 45-67"
+    autoComplete="street-address"
+    required
+  />
+
+  <small>
+    Esta dirección será utilizada para gestionar la entrega de tus pedidos.
+  </small>
+
+</div>
 
             <div className="perfil-campo">
 

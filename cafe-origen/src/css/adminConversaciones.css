@@ -1,31 +1,253 @@
 /* =========================================================
-   ADMIN CONSULTAS - PÁGINA
-========================================================= */
+   ADMIN CONSULTAS - CAFÉ DE ORIGEN
+   PARTE 1
+   ========================================================= */
+/* =========================================================
+   FORMULARIO PARA RESPONDER AL CLIENTE
+   ========================================================= */
 
-.admin-conversaciones-page {
+.admin-respuesta-form {
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+
+  padding: 18px 22px !important;
+
+  box-sizing: border-box !important;
+
+  background: #fffdf9 !important;
+
+  border-top: 1px solid #e5d8c5 !important;
+}
+
+
+/* =========================================================
+   CUADRO DE TEXTO
+   ========================================================= */
+
+.admin-respuesta-textarea {
+  flex: 1 1 auto !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 82px !important;
+  min-height: 82px !important;
+
+  padding: 14px 16px !important;
+
+  box-sizing: border-box !important;
+
+  border: 1px solid #d8c8b1 !important;
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+  color: #3b291d !important;
+
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+
+  resize: none !important;
+
+  outline: none !important;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+
+/* PLACEHOLDER */
+
+.admin-respuesta-textarea::placeholder {
+  color: #9a8a7e !important;
+  opacity: 1 !important;
+}
+
+
+/* CUANDO SE ESCRIBE */
+
+.admin-respuesta-textarea:focus {
+  border-color: #525300 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(82, 83, 0, 0.12) !important;
+}
+
+
+/* =========================================================
+   BOTÓN ENVIAR
+   ========================================================= */
+
+.admin-respuesta-enviar {
+  flex: 0 0 130px !important;
+
+  width: 130px !important;
+  height: 52px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  padding: 0 20px !important;
+
+  box-sizing: border-box !important;
+
+  border: none !important;
+  border-radius: 11px !important;
+
+  background: #525300 !important;
+  color: #ffffff !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+
+  cursor: pointer !important;
+
+  box-shadow:
+    0 5px 14px rgba(82, 83, 0, 0.20) !important;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+
+/* ICONO DEL BOTÓN */
+
+.admin-respuesta-enviar svg {
+  width: 18px !important;
+  height: 18px !important;
+
+  flex-shrink: 0 !important;
+}
+
+
+/* HOVER */
+
+.admin-respuesta-enviar:hover:not(:disabled) {
+  background: #686900 !important;
+
+  transform: translateY(-1px) !important;
+
+  box-shadow:
+    0 7px 18px rgba(82, 83, 0, 0.25) !important;
+}
+
+
+/* DESHABILITADO */
+
+.admin-respuesta-enviar:disabled {
+  background: #aaa98f !important;
+  color: #ffffff !important;
+
+  opacity: 0.65 !important;
+
+  cursor: not-allowed !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .admin-respuesta-form {
+    padding: 12px !important;
+
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    gap: 10px !important;
+  }
+
+
+  .admin-respuesta-textarea {
+    width: 100% !important;
+
+    height: 100px !important;
+    min-height: 100px !important;
+  }
+
+
+  .admin-respuesta-enviar {
+    flex: none !important;
+
+    width: 100% !important;
+    height: 50px !important;
+  }
+
+}
+
+
+:root {
+  --admin-oliva: #525300;
+  --admin-oliva-hover: #666800;
+  --admin-cafe: #4b2413;
+  --admin-cafe-suave: #765a49;
+
+  --admin-crema: #f6efe3;
+  --admin-crema-claro: #fffaf3;
+  --admin-blanco: #ffffff;
+
+  --admin-borde: #e4d7c5;
+  --admin-texto: #38281f;
+  --admin-secundario: #817267;
+
+  --admin-whatsapp: #20c968;
+  --admin-whatsapp-hover: #19b85c;
+
+  --admin-sombra:
+    0 14px 38px rgba(63, 42, 26, 0.10);
+}
+
+
+/* =========================================================
+   PÁGINA GENERAL
+   ========================================================= */
+
+.admin-conversaciones-page,
+.admin-consultas-page {
   width: 100%;
-  min-height: calc(100vh - 90px);
+  min-height: calc(100vh - 80px);
 
-  padding: 42px 24px 60px;
+  padding: 34px 24px 60px;
+
+  box-sizing: border-box;
 
   background:
     linear-gradient(
       180deg,
-      #f8f2e7 0%,
-      #f4ecdf 100%
+      #fffdf8 0%,
+      #f5eddf 100%
     );
 
-  box-sizing: border-box;
+  color: var(--admin-texto);
 }
 
 
 /* =========================================================
    ENCABEZADO
-========================================================= */
+   ========================================================= */
 
-.admin-conversaciones-header {
+.admin-conversaciones-header,
+.admin-consultas-hero {
   width: 100%;
-  max-width: 1320px;
+  max-width: 1420px;
 
   margin: 0 auto 26px;
 }
@@ -33,37 +255,39 @@
 
 /* =========================================================
    BOTÓN VOLVER
-========================================================= */
+   ========================================================= */
 
 .admin-conversaciones-header-superior {
   margin-bottom: 18px;
 }
 
 
-.btn-volver-admin {
+.btn-volver-admin,
+.admin-consultas-volver {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   gap: 8px;
 
-  padding: 10px 16px;
+  min-height: 42px;
 
-  background: #4d4b00;
-  color: #ffffff;
+  padding: 9px 17px;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+
+  background: var(--admin-oliva);
+  color: #ffffff;
 
   font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 800;
 
   cursor: pointer;
 
   box-shadow:
-    0 5px 14px
-    rgba(77, 75, 0, 0.16);
+    0 6px 16px rgba(82, 83, 0, 0.17);
 
   transition:
     background 0.2s ease,
@@ -72,55 +296,233 @@
 }
 
 
-.btn-volver-admin:hover {
-  background: #676400;
+.btn-volver-admin:hover,
+.admin-consultas-volver:hover {
+  background: var(--admin-oliva-hover);
 
   transform: translateY(-1px);
 
   box-shadow:
-    0 8px 18px
-    rgba(77, 75, 0, 0.22);
+    0 8px 20px rgba(82, 83, 0, 0.22);
 }
 
 
 /* =========================================================
    TÍTULO
-========================================================= */
+   ========================================================= */
 
-.admin-conversaciones-header h1 {
-  margin: 0 0 10px;
+.admin-conversaciones-header h1,
+.admin-consultas-hero h1 {
+  margin: 0 0 9px;
 
-  color: #4d4b00;
+  color: var(--admin-oliva);
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 2.4rem;
+  font-size: clamp(2rem, 4vw, 2.8rem);
 
   line-height: 1.1;
+
+  letter-spacing: -0.02em;
 }
 
 
 /* =========================================================
    DESCRIPCIÓN
-========================================================= */
+   ========================================================= */
 
-.admin-conversaciones-header > p {
-  margin: 0 0 18px;
+.admin-conversaciones-header > p,
+.admin-consultas-hero p {
+  max-width: 900px;
 
-  color: #6e645c;
+  margin: 0;
+
+  color: var(--admin-secundario);
 
   font-size: 1rem;
-
   line-height: 1.6;
 }
 
 
 /* =========================================================
+   ESTADÍSTICAS / CONTADORES
+   ========================================================= */
+
+.admin-consultas-resumen,
+.admin-estadisticas,
+.estadisticas-consultas {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(150px, 210px));
+
+  gap: 12px;
+
+  margin-top: 22px;
+  margin-bottom: 22px;
+}
+
+
+.admin-resumen-card,
+.admin-estadistica,
+.estadistica-consulta {
+  min-height: 72px;
+
+  padding: 14px 17px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 7px 20px rgba(63, 42, 26, 0.07);
+}
+
+
+.admin-resumen-card strong,
+.admin-estadistica strong,
+.estadistica-consulta strong {
+  min-width: 42px;
+  height: 42px;
+
+  padding: 0 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border-radius: 11px;
+
+  background: var(--admin-oliva);
+  color: white;
+
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+
+.admin-resumen-card span,
+.admin-estadistica span,
+.estadistica-consulta span {
+  color: var(--admin-cafe);
+
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
+
+.admin-consultas-main {
+  width: 100%;
+  max-width: 1420px;
+
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.admin-consultas-toolbar {
+  width: 100%;
+
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+
+/* =========================================================
+   BUSCADOR
+   ========================================================= */
+
+.admin-consultas-buscador,
+.buscador-consultas {
+  width: min(420px, 100%);
+  min-height: 46px;
+
+  padding: 0 15px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 5px 14px rgba(63, 42, 26, 0.05);
+}
+
+
+.admin-consultas-buscador svg,
+.buscador-consultas svg {
+  flex-shrink: 0;
+
+  color: var(--admin-oliva);
+}
+
+
+.admin-consultas-buscador input,
+.buscador-consultas input {
+  flex: 1;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: var(--admin-texto);
+
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+
+.admin-consultas-buscador input::placeholder,
+.buscador-consultas input::placeholder {
+  color: #a09389;
+}
+
+
+/* =========================================================
    FILTROS
-========================================================= */
+   ========================================================= */
 
 .admin-consultas-filtros {
   display: flex;
@@ -128,15 +530,13 @@
   flex-wrap: wrap;
 
   gap: 9px;
-
-  margin-top: 18px;
 }
 
 
 .admin-consultas-filtros button {
-  min-height: 38px;
+  min-height: 42px;
 
-  padding: 8px 15px;
+  padding: 8px 17px;
 
   display: inline-flex;
   align-items: center;
@@ -144,19 +544,19 @@
 
   gap: 7px;
 
-  background: #ffffff;
-
-  color: #5e544c;
+  box-sizing: border-box;
 
   border:
-    1px solid
-    #d8ccba;
+    1px solid var(--admin-borde);
 
   border-radius: 999px;
 
+  background: #ffffff;
+  color: #5e4c40;
+
   font-family: inherit;
-  font-size: 0.84rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 800;
 
   cursor: pointer;
 
@@ -164,160 +564,207 @@
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
 .admin-consultas-filtros button:hover {
-  background: #f7f0e4;
+  border-color: var(--admin-oliva);
 
-  border-color: #aaa469;
+  color: var(--admin-oliva);
 
   transform: translateY(-1px);
 }
 
 
 .admin-consultas-filtros button.activo {
-  background: #4d4b00;
+  border-color: var(--admin-oliva);
 
-  color: #ffffff;
-
-  border-color: #4d4b00;
+  background: var(--admin-oliva);
+  color: white;
 
   box-shadow:
-    0 4px 12px
-    rgba(77, 75, 0, 0.16);
-}
-
-
-.admin-consultas-filtros button svg {
-  flex-shrink: 0;
+    0 6px 16px rgba(82, 83, 0, 0.18);
 }
 
 
 /* =========================================================
-   CONTENEDOR PRINCIPAL
-========================================================= */
+   LAYOUT CHAT
+   ========================================================= */
 
 .admin-chat-layout {
   width: 100%;
-  max-width: 1320px;
 
-  min-height: 560px;
-
-  margin: 0 auto;
+  min-height: 620px;
 
   display: grid;
 
   grid-template-columns:
-    390px
+    minmax(320px, 390px)
     minmax(0, 1fr);
+
+  overflow: hidden;
+
+  box-sizing: border-box;
 
   background: #ffffff;
 
   border:
-    1px solid
-    rgba(90, 50, 29, 0.12);
+    1px solid var(--admin-borde);
 
-  border-radius: 16px;
+  border-radius: 18px;
 
-  overflow: hidden;
-
-  box-shadow:
-    0 14px 34px
-    rgba(70, 40, 20, 0.10);
+  box-shadow: var(--admin-sombra);
 }
 
 
 /* =========================================================
-   LISTA DE CONSULTAS
-========================================================= */
+   COLUMNA IZQUIERDA
+   ========================================================= */
 
 .lista-conversaciones {
   min-width: 0;
 
+  display: flex;
+  flex-direction: column;
+
   background: #fffdf9;
 
   border-right:
-    1px solid
-    #e7ddd0;
+    1px solid var(--admin-borde);
 }
 
 
 /* =========================================================
-   TÍTULO LISTA
-========================================================= */
+   ENCABEZADO LISTA
+   ========================================================= */
 
-.lista-conversaciones > h2 {
+.lista-conversaciones > h2,
+.lista-conversaciones-header {
+  min-height: 68px;
+
   margin: 0;
 
-  padding: 24px 22px;
+  padding: 0 21px;
 
-  color: #4d4b00;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+
+  color: var(--admin-oliva);
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 1.35rem;
+  font-size: 1.4rem;
 
   border-bottom:
-    1px solid
-    #e7ddd0;
+    1px solid var(--admin-borde);
+}
+
+
+.lista-conversaciones-header h2 {
+  margin: 0;
+
+  font: inherit;
+  color: inherit;
+}
+
+
+.lista-conversaciones-header span {
+  min-width: 30px;
+  height: 30px;
+
+  padding: 0 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background: var(--admin-oliva);
+  color: white;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 
 /* =========================================================
-   ITEM CONSULTA
-========================================================= */
+   CONTENEDOR DE CONVERSACIONES
+   ========================================================= */
+
+.lista-conversaciones-contenido {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow-y: auto;
+}
+
+
+/* =========================================================
+   CONVERSACIÓN
+   ========================================================= */
 
 .conversacion-item {
   width: 100%;
 
-  padding: 20px 18px;
+  padding: 19px 18px;
 
   display: block;
 
-  background: #ffffff;
-
-  color: #332b25;
+  box-sizing: border-box;
 
   border: none;
 
+  border-left:
+    4px solid transparent;
+
   border-bottom:
-    1px solid
-    #eee6dc;
+    1px solid #eee4d7;
+
+  background: #ffffff;
+  color: var(--admin-texto);
 
   text-align: left;
 
   cursor: pointer;
 
-  box-sizing: border-box;
-
   transition:
     background 0.2s ease,
-    border-left 0.2s ease;
+    border-color 0.2s ease;
 }
 
 
 .conversacion-item:hover {
-  background: #fbf6ee;
+  background: #faf4e9;
 }
 
 
 .conversacion-item.activa {
-  background: #f4ecd9;
+  background: #f4ead5;
 
-  border-left:
-    4px solid
-    #5f6500;
+  border-left-color:
+    var(--admin-oliva);
 }
 
 
 /* =========================================================
-   PARTE SUPERIOR DEL ITEM
-========================================================= */
+   CABECERA DE CADA CONVERSACIÓN
+   ========================================================= */
 
 .conversacion-superior {
   display: flex;
@@ -331,19 +778,29 @@
 
 
 .conversacion-superior strong {
-  color: #4a2513;
+  color: var(--admin-cafe);
 
-  font-size: 1rem;
+  font-size: 0.98rem;
+  font-weight: 900;
+
+  text-transform: capitalize;
+}
+
+
+.conversacion-superior svg {
+  flex-shrink: 0;
+
+  color: var(--admin-oliva);
 }
 
 
 /* =========================================================
    BADGE NO LEÍDO
-========================================================= */
+   ========================================================= */
 
 .badge-no-leido {
-  min-width: 26px;
-  height: 26px;
+  min-width: 25px;
+  height: 25px;
 
   padding: 0 7px;
 
@@ -351,25 +808,27 @@
   align-items: center;
   justify-content: center;
 
-  background: #5f6500;
-
-  color: #ffffff;
+  box-sizing: border-box;
 
   border-radius: 999px;
 
-  font-size: 0.78rem;
-  font-weight: 700;
+  background: var(--admin-oliva);
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
 
 /* =========================================================
-   TIPO CONSULTA / ENVÍO
-========================================================= */
+   TIPO DE CONVERSACIÓN
+   ========================================================= */
 
-.tipo-consulta {
+.tipo-consulta,
+.conversacion-tipo {
   width: fit-content;
 
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
   padding: 5px 9px;
 
@@ -380,8 +839,8 @@
 
   border-radius: 999px;
 
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.69rem;
+  font-weight: 900;
 
   line-height: 1;
 
@@ -391,140 +850,114 @@
 }
 
 
-.tipo-consulta svg {
-  flex-shrink: 0;
+.tipo-consulta.tipo-envio,
+.conversacion-tipo.envio {
+  background: #e7f1f8;
+
+  color: #2c6381;
+
+  border:
+    1px solid #bdd7e7;
 }
 
 
 .tipo-consulta.tipo-consulta,
-.tipo-consulta.tipo-consulta {
-  background: #edf1dc;
+.conversacion-tipo.consulta {
+  background: #edf0dc;
 
-  color: #596100;
-
-  border:
-    1px solid
-    #ced6a3;
-}
-
-
-.tipo-consulta.tipo-envio {
-  background: #e8f0f8;
-
-  color: #356583;
+  color: #596000;
 
   border:
-    1px solid
-    #bfd4e4;
+    1px solid #ced5a3;
 }
 
 
 /* =========================================================
-   PRODUCTO CONSULTADO
-========================================================= */
+   PEDIDO EN LA LISTA
+   ========================================================= */
 
-.consulta-producto-admin {
-  margin-bottom: 8px;
-
-  display: flex;
-  align-items: center;
-
-  gap: 6px;
-
-  color: #765335;
-
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-
-.consulta-producto-admin svg {
-  color: #5f6500;
-
-  flex-shrink: 0;
-}
-
-
-/* =========================================================
-   PEDIDO
-========================================================= */
-
-.pedido-numero {
+.pedido-numero,
+.conversacion-pedido {
   display: block;
 
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 
-  color: #8a7d72;
+  color: #917565;
 
-  font-size: 0.82rem;
+  font-size: 0.8rem;
+
+  overflow-wrap: anywhere;
 }
 
 
 /* =========================================================
-   MENSAJE PREVIO
-========================================================= */
+   PREVISUALIZACIÓN MENSAJE
+   ========================================================= */
 
-.conversacion-item p {
-  margin: 0 0 8px;
+.conversacion-item p,
+.conversacion-preview {
+  margin: 0 0 7px;
 
-  color: #5c524b;
-
-  font-size: 0.9rem;
-
-  line-height: 1.4;
-}
-
-
-/* =========================================================
-   ESTADO PREVIO
-========================================================= */
-
-.conversacion-item small {
-  color: #8a8179;
-
-  font-size: 0.78rem;
-}
-
-
-/* =========================================================
-   SIN CONSULTAS
-========================================================= */
-
-.conversaciones-sin-datos {
-  padding: 40px 24px;
-
-  text-align: center;
-
-  color: #766c63;
-}
-
-
-.conversaciones-sin-datos strong {
-  display: block;
-
-  margin-bottom: 10px;
-
-  color: #4a2513;
-
-  font-size: 1rem;
-}
-
-
-.conversaciones-sin-datos p {
-  margin: 0;
+  color: #655246;
 
   font-size: 0.88rem;
+  line-height: 1.45;
+}
 
-  line-height: 1.55;
+
+.conversacion-preview {
+  display: -webkit-box;
+
+  overflow: hidden;
+
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+
+.conversacion-item small,
+.conversacion-estado {
+  color: #92857c;
+
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 
 /* =========================================================
-   PANEL CHAT
-========================================================= */
+   SCROLL IZQUIERDO
+   ========================================================= */
 
-.panel-chat {
+.lista-conversaciones-contenido::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+.lista-conversaciones-contenido::-webkit-scrollbar-thumb {
+  background: #d6c6b1;
+
+  border-radius: 999px;
+}
+
+
+.lista-conversaciones-contenido::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* =========================================================
+   ADMIN CONSULTAS - CAFÉ DE ORIGEN
+   PARTE 2
+   PANEL DERECHO + CHAT
+   ========================================================= */
+
+
+/* =========================================================
+   PANEL DERECHO
+   ========================================================= */
+
+.chat-panel,
+.panel-conversacion {
   min-width: 0;
+  min-height: 0;
 
   display: flex;
   flex-direction: column;
@@ -534,248 +967,249 @@
 
 
 /* =========================================================
-   CHAT SIN SELECCIÓN
-========================================================= */
+   ENCABEZADO DEL CHAT
+   ========================================================= */
 
-.chat-vacio {
-  flex: 1;
+.chat-header,
+.panel-conversacion-header {
+  min-height: 92px;
 
-  min-height: 560px;
-
-  padding: 30px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  background:
-    radial-gradient(
-      circle at center,
-      #fffdf9 0%,
-      #ffffff 72%
-    );
-}
-
-
-.chat-vacio svg {
-  margin-bottom: 16px;
-
-  color: #5f6500;
-}
-
-
-.chat-vacio h2 {
-  margin: 0 0 12px;
-
-  color: #4d4b00;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 1.6rem;
-}
-
-
-.chat-vacio p {
-  max-width: 480px;
-
-  margin: 0;
-
-  color: #82786f;
-
-  font-size: 1rem;
-
-  line-height: 1.55;
-}
-
-
-/* =========================================================
-   HEADER CHAT
-========================================================= */
-
-.chat-header {
-  padding: 20px 24px;
+  padding: 17px 24px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  gap: 18px;
+  gap: 20px;
 
-  background: #fffdf9;
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9 0%,
+      #ffffff 100%
+    );
 
   border-bottom:
-    1px solid
-    #e7ddd0;
+    1px solid var(--admin-borde);
 }
 
 
-.chat-header h2 {
-  margin: 0 0 5px;
+/* =========================================================
+   INFORMACIÓN CLIENTE EN HEADER
+   ========================================================= */
 
-  color: #4a2513;
+.chat-header-cliente,
+.chat-cliente-info {
+  min-width: 0;
 
-  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
 }
 
 
-.chat-header > div:first-child > span {
-  color: #8a8179;
+.chat-header-avatar,
+.chat-cliente-avatar {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--admin-crema);
+
+  color: var(--admin-oliva);
+
+  border:
+    1px solid var(--admin-borde);
+}
+
+
+.chat-header-datos,
+.chat-cliente-datos {
+  min-width: 0;
+}
+
+
+.chat-header-datos strong,
+.chat-cliente-datos strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--admin-cafe);
+
+  font-size: 1.08rem;
+  font-weight: 900;
+
+  text-transform: capitalize;
+}
+
+
+.chat-header-datos span,
+.chat-cliente-datos span {
+  display: block;
+
+  color: var(--admin-secundario);
 
   font-size: 0.82rem;
 }
 
 
 /* =========================================================
-   ACCIONES DEL CHAT
-========================================================= */
+   ACCIONES DEL HEADER
+   ========================================================= */
 
 .chat-header-acciones {
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
-  gap: 9px;
+  gap: 10px;
 
   flex-wrap: wrap;
 }
 
 
 /* =========================================================
-   ESTADO DE LA CONSULTA
-========================================================= */
+   ESTADO DE CONVERSACIÓN
+   ========================================================= */
 
-.estado-conversacion {
+.estado-conversacion,
+.chat-estado {
   min-height: 38px;
 
-  padding: 7px 12px;
+  padding: 7px 13px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  background: #f5eddc;
-
-  color: #5f6500;
+  box-sizing: border-box;
 
   border:
-    1px solid
-    #dfd0ab;
+    1px solid #dfd3ae;
 
   border-radius: 999px;
 
-  font-size: 0.78rem;
-  font-weight: 700;
+  background: #f8f2dc;
+
+  color: #6a6400;
+
+  font-size: 0.76rem;
+  font-weight: 800;
 
   white-space: nowrap;
-
-  box-sizing: border-box;
 }
 
 
 /* =========================================================
    BOTÓN WHATSAPP
-========================================================= */
+   ========================================================= */
 
-.btn-whatsapp-admin,
-.btn-whatsapp-modal {
+.btn-whatsapp,
+.chat-btn-whatsapp {
+  min-height: 42px;
+
+  padding: 9px 15px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   gap: 7px;
 
-  min-height: 38px;
-
-  padding: 8px 14px;
-
-  background: #25d366;
-
-  color: #ffffff;
+  box-sizing: border-box;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 9px;
+
+  background: var(--admin-whatsapp);
+  color: #ffffff;
 
   font-family: inherit;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 900;
 
   cursor: pointer;
 
   box-shadow:
-    0 4px 12px
-    rgba(37, 211, 102, 0.18);
+    0 6px 15px rgba(32, 201, 104, 0.19);
 
   transition:
     background 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
-
-  white-space: nowrap;
-
-  box-sizing: border-box;
 }
 
 
-.btn-whatsapp-admin:hover,
-.btn-whatsapp-modal:hover {
-  background: #1ebe5d;
+.btn-whatsapp:hover,
+.chat-btn-whatsapp:hover {
+  background: var(--admin-whatsapp-hover);
 
   transform: translateY(-1px);
 
   box-shadow:
-    0 7px 16px
-    rgba(37, 211, 102, 0.24);
+    0 8px 19px rgba(32, 201, 104, 0.25);
 }
 
 
-.btn-whatsapp-admin:active,
-.btn-whatsapp-modal:active {
-  transform: translateY(0);
-}
+.btn-whatsapp:disabled,
+.chat-btn-whatsapp:disabled {
+  background: #a7b6ac;
 
+  color: #eef2ef;
 
-.btn-whatsapp-admin svg,
-.btn-whatsapp-modal svg {
-  width: 17px;
-  height: 17px;
+  cursor: not-allowed;
 
-  flex-shrink: 0;
+  box-shadow: none;
+
+  transform: none;
 }
 
 
 /* =========================================================
-   INFORMACIÓN CLIENTE
-========================================================= */
+   BOTÓN INFORMACIÓN DEL CLIENTE
+   ========================================================= */
 
-.btn-info-cliente {
-  min-height: 38px;
+.btn-info-cliente,
+.chat-btn-info {
+  min-height: 42px;
 
-  padding: 8px 14px;
+  padding: 9px 15px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  background: #4d4b00;
+  gap: 7px;
 
+  box-sizing: border-box;
+
+  border:
+    1px solid var(--admin-oliva);
+
+  border-radius: 9px;
+
+  background: var(--admin-oliva);
   color: #ffffff;
-
-  border: none;
-  border-radius: 8px;
 
   font-family: inherit;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 900;
 
   cursor: pointer;
 
-  white-space: nowrap;
+  box-shadow:
+    0 6px 15px rgba(82, 83, 0, 0.16);
 
   transition:
     background 0.2s ease,
@@ -783,216 +1217,465 @@
 }
 
 
-.btn-info-cliente:hover {
-  background: #676400;
+.btn-info-cliente:hover,
+.chat-btn-info:hover {
+  background: var(--admin-oliva-hover);
 
   transform: translateY(-1px);
 }
 
 
 /* =========================================================
-   MENSAJES
-========================================================= */
+   RESUMEN DEL PEDIDO SOBRE EL CHAT
+   ========================================================= */
 
-.chat-mensajes {
-  flex: 1;
+.chat-pedido-resumen,
+.pedido-asociado-resumen {
+  margin: 18px 22px 0;
 
-  min-height: 360px;
-  max-height: 520px;
-
-  padding: 24px;
+  padding: 14px 17px;
 
   display: flex;
-  flex-direction: column;
+  align-items: center;
 
-  gap: 14px;
+  gap: 12px;
 
-  overflow-y: auto;
+  box-sizing: border-box;
 
-  background:
-    linear-gradient(
-      180deg,
-      #ffffff,
-      #fffaf2
-    );
+  background: #f9f4e9;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 13px;
 }
 
 
-/* =========================================================
-   MENSAJE
-========================================================= */
+.chat-pedido-resumen > svg,
+.pedido-asociado-resumen > svg {
+  flex-shrink: 0;
 
-.mensaje {
-  max-width: 72%;
-
-  padding: 12px 14px;
-
-  border-radius: 12px;
-
-  box-shadow:
-    0 3px 10px
-    rgba(70, 40, 20, 0.06);
+  color: var(--admin-oliva);
 }
 
 
-.mensaje p {
-  margin: 4px 0 0;
-
-  font-size: 0.92rem;
-
-  line-height: 1.5;
+.chat-pedido-resumen-info {
+  min-width: 0;
 }
 
 
-/* =========================================================
-   AUTOR
-========================================================= */
+.chat-pedido-resumen span,
+.pedido-asociado-resumen span {
+  color: var(--admin-secundario);
 
-.mensaje-autor {
-  display: block;
-
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 700;
 }
 
 
+.chat-pedido-resumen strong,
+.pedido-asociado-resumen strong {
+  color: var(--admin-cafe);
+
+  font-size: 0.88rem;
+  font-weight: 900;
+
+  overflow-wrap: anywhere;
+}
+
+
+.chat-pedido-productos {
+  margin-top: 4px;
+
+  color: #5f4c40;
+
+  font-size: 0.83rem;
+  line-height: 1.45;
+}
+
+
 /* =========================================================
-   MENSAJE CLIENTE
-========================================================= */
+   OTRA VARIANTE DE PEDIDO ASOCIADO
+   ========================================================= */
 
-.mensaje-cliente {
-  align-self: flex-start;
+.chat-pedido {
+  margin: 18px 22px 0;
 
-  background: #f2eadf;
+  padding: 15px 17px;
 
-  color: #4a3020;
+  box-sizing: border-box;
+
+  background: var(--admin-crema-claro);
 
   border:
-    1px solid
-    #e0d1bd;
+    1px solid var(--admin-borde);
+
+  border-radius: 13px;
 }
 
 
-.mensaje-cliente .mensaje-autor {
-  color: #6d533f;
+.chat-pedido-cabecera {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 8px;
+
+  color: var(--admin-oliva);
+
+  font-size: 0.78rem;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+.chat-pedido-numero {
+  color: var(--admin-cafe);
+
+  font-size: 0.9rem;
+  font-weight: 900;
+
+  overflow-wrap: anywhere;
+}
+
+
+.chat-pedido-producto {
+  margin-top: 6px;
+
+  color: #5f4b3e;
+
+  font-size: 0.87rem;
 }
 
 
 /* =========================================================
-   MENSAJE ADMIN
-========================================================= */
+   ÁREA DE MENSAJES
+   ========================================================= */
 
-.mensaje-admin {
-  align-self: flex-end;
+.chat-mensajes,
+.mensajes-conversacion {
+  flex: 1;
 
-  background: #5f6500;
+  min-height: 320px;
 
-  color: #ffffff;
-}
+  padding: 24px;
 
+  overflow-y: auto;
 
-.mensaje-admin .mensaje-autor {
-  color:
-    rgba(
-      255,
-      255,
-      255,
-      0.78
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdfa 0%,
+      #faf5ec 100%
     );
 }
 
 
 /* =========================================================
-   SIN MENSAJES
-========================================================= */
+   MENSAJE VACÍO
+   ========================================================= */
 
-.chat-mensajes-vacio {
-  margin: auto;
+.chat-sin-mensajes,
+.sin-mensajes {
+  min-height: 270px;
 
-  color: #867b72;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   text-align: center;
 
+  color: var(--admin-secundario);
+}
+
+
+.chat-sin-mensajes svg,
+.sin-mensajes svg {
+  margin-bottom: 12px;
+
+  color: var(--admin-oliva);
+}
+
+
+.chat-sin-mensajes p,
+.sin-mensajes p {
+  max-width: 360px;
+
+  margin: 0;
+
   font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 
 /* =========================================================
-   INPUT DEL CHAT
-========================================================= */
+   FILA DE MENSAJE
+   ========================================================= */
 
-.chat-input-area {
-  padding: 16px 18px;
+.mensaje-fila,
+.chat-mensaje-fila {
+  width: 100%;
+
+  margin-bottom: 14px;
 
   display: flex;
-  align-items: stretch;
-
-  gap: 12px;
-
-  background: #fffdf9;
-
-  border-top:
-    1px solid
-    #e7ddd0;
 }
 
 
-.chat-input-area textarea {
+.mensaje-fila.cliente,
+.chat-mensaje-fila.cliente {
+  justify-content: flex-start;
+}
+
+
+.mensaje-fila.admin,
+.chat-mensaje-fila.admin {
+  justify-content: flex-end;
+}
+
+
+/* =========================================================
+   BURBUJA GENERAL
+   ========================================================= */
+
+.mensaje-burbuja,
+.chat-mensaje {
+  width: fit-content;
+  max-width: min(72%, 650px);
+
+  padding: 11px 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 15px;
+
+  box-shadow:
+    0 4px 12px rgba(63, 42, 26, 0.06);
+}
+
+
+/* =========================================================
+   MENSAJE DEL CLIENTE
+   ========================================================= */
+
+.mensaje-fila.cliente .mensaje-burbuja,
+.chat-mensaje-fila.cliente .chat-mensaje,
+.mensaje-cliente {
+  background: #ffffff;
+
+  color: var(--admin-texto);
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-bottom-left-radius: 5px;
+}
+
+
+/* =========================================================
+   MENSAJE DEL ADMIN
+   ========================================================= */
+
+.mensaje-fila.admin .mensaje-burbuja,
+.chat-mensaje-fila.admin .chat-mensaje,
+.mensaje-admin {
+  background: var(--admin-oliva);
+
+  color: #ffffff;
+
+  border:
+    1px solid var(--admin-oliva);
+
+  border-bottom-right-radius: 5px;
+}
+
+
+/* =========================================================
+   AUTOR DEL MENSAJE
+   ========================================================= */
+
+.mensaje-autor,
+.chat-mensaje-autor {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+
+.mensaje-fila.cliente .mensaje-autor,
+.chat-mensaje-fila.cliente .chat-mensaje-autor {
+  color: var(--admin-cafe);
+}
+
+
+.mensaje-fila.admin .mensaje-autor,
+.chat-mensaje-fila.admin .chat-mensaje-autor {
+  color: #f3f0ce;
+}
+
+
+/* =========================================================
+   TEXTO DEL MENSAJE
+   ========================================================= */
+
+.mensaje-texto,
+.chat-mensaje-texto {
+  margin: 0;
+
+  font-size: 0.91rem;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   HORA DEL MENSAJE
+   ========================================================= */
+
+.mensaje-hora,
+.chat-mensaje-hora {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 4px;
+
+  margin-top: 6px;
+
+  font-size: 0.66rem;
+}
+
+
+.mensaje-fila.cliente .mensaje-hora,
+.chat-mensaje-fila.cliente .chat-mensaje-hora {
+  color: #9b8d83;
+}
+
+
+.mensaje-fila.admin .mensaje-hora,
+.chat-mensaje-fila.admin .chat-mensaje-hora {
+  color: #e2dfbd;
+}
+
+
+/* =========================================================
+   FORMULARIO PARA RESPONDER
+   ========================================================= */
+
+.chat-respuesta,
+.form-respuesta,
+.chat-formulario {
+  padding: 15px 18px;
+
+  display: flex;
+  align-items: flex-end;
+
+  gap: 10px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-top:
+    1px solid var(--admin-borde);
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.chat-respuesta textarea,
+.form-respuesta textarea,
+.chat-formulario textarea {
   flex: 1;
 
-  min-height: 54px;
+  min-width: 0;
+  min-height: 46px;
   max-height: 130px;
 
   padding: 12px 14px;
 
   resize: vertical;
 
-  background: #ffffff;
-
-  color: #333333;
+  box-sizing: border-box;
 
   border:
-    1px solid
-    #d8ccba;
+    1px solid #d9cbb8;
 
-  border-radius: 8px;
+  border-radius: 11px;
 
   outline: none;
 
-  font-family: inherit;
-  font-size: 0.95rem;
+  background: #fffdf9;
+  color: var(--admin-texto);
 
-  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.4;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
-.chat-input-area textarea:focus {
-  border-color: #5f6500;
+.chat-respuesta textarea:focus,
+.form-respuesta textarea:focus,
+.chat-formulario textarea:focus {
+  border-color: var(--admin-oliva);
 
   box-shadow:
-    0 0 0 3px
-    rgba(95, 101, 0, 0.10);
+    0 0 0 3px rgba(82, 83, 0, 0.09);
+}
+
+
+.chat-respuesta textarea::placeholder,
+.form-respuesta textarea::placeholder,
+.chat-formulario textarea::placeholder {
+  color: #a3968c;
 }
 
 
 /* =========================================================
    BOTÓN ENVIAR
-========================================================= */
+   ========================================================= */
 
-.chat-input-area button {
-  min-width: 110px;
+.chat-respuesta button,
+.form-respuesta button,
+.chat-formulario button,
+.btn-enviar-mensaje {
+  min-width: 112px;
+  min-height: 46px;
 
-  padding: 0 18px;
+  padding: 10px 17px;
 
-  background: #4d4b00;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  color: #ffffff;
+  gap: 7px;
+
+  box-sizing: border-box;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+
+  background: var(--admin-oliva);
+  color: #ffffff;
 
   font-family: inherit;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 900;
 
   cursor: pointer;
 
@@ -1002,249 +1685,812 @@
 }
 
 
-.chat-input-area button:hover:not(:disabled) {
-  background: #676400;
+.chat-respuesta button:hover,
+.form-respuesta button:hover,
+.chat-formulario button:hover,
+.btn-enviar-mensaje:hover {
+  background: var(--admin-oliva-hover);
 
   transform: translateY(-1px);
 }
 
 
-.chat-input-area button:disabled {
-  opacity: 0.55;
+.chat-respuesta button:disabled,
+.form-respuesta button:disabled,
+.chat-formulario button:disabled,
+.btn-enviar-mensaje:disabled {
+  background: #aaa993;
 
   cursor: not-allowed;
+
+  transform: none;
 }
 
 
 /* =========================================================
-   MODAL OVERLAY
-========================================================= */
+   PANEL SIN CONVERSACIÓN SELECCIONADA
+   ========================================================= */
 
-.modal-cliente-overlay {
-  position: fixed;
+.chat-vacio,
+.sin-conversacion {
+  min-height: 620px;
 
-  inset: 0;
-
-  padding: 20px;
+  padding: 35px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  background:
-    rgba(0, 0, 0, 0.52);
-
-  backdrop-filter: blur(2px);
-
-  z-index: 3000;
-
   box-sizing: border-box;
-}
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal-cliente {
-  position: relative;
-
-  width: 100%;
-  max-width: 560px;
-
-  max-height: 90vh;
-
-  padding: 32px;
-
-  overflow-y: auto;
-
-  background: #fffdf9;
-
-  border:
-    1px solid
-    rgba(90, 50, 29, 0.14);
-
-  border-radius: 16px;
-
-  box-shadow:
-    0 20px 50px
-    rgba(0, 0, 0, 0.24);
-
-  box-sizing: border-box;
-}
-
-
-/* =========================================================
-   CERRAR MODAL
-========================================================= */
-
-.modal-cliente-cerrar {
-  position: absolute;
-
-  top: 12px;
-  right: 14px;
-
-  width: 36px;
-  height: 36px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: transparent;
-
-  color: #7c7067;
-
-  border: none;
-  border-radius: 50%;
-
-  font-size: 1.7rem;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-
-.modal-cliente-cerrar:hover {
-  background: #f3ebe0;
-
-  color: #a13f32;
-}
-
-
-/* =========================================================
-   TÍTULO MODAL
-========================================================= */
-
-.modal-cliente h2 {
-  margin: 0 0 24px;
-
-  color: #4a2513;
 
   text-align: center;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9 0%,
+      #faf4e9 100%
+    );
+}
+
+
+.chat-vacio-icono,
+.sin-conversacion svg {
+  margin-bottom: 15px;
+
+  color: var(--admin-oliva);
+}
+
+
+.chat-vacio h3,
+.sin-conversacion h3 {
+  margin: 0 0 7px;
+
+  color: var(--admin-oliva);
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 1.6rem;
+  font-size: 1.45rem;
+}
+
+
+.chat-vacio p,
+.sin-conversacion p {
+  max-width: 390px;
+
+  margin: 0;
+
+  color: var(--admin-secundario);
+
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 
 /* =========================================================
-   BLOQUES CLIENTE
-========================================================= */
+   ESTADO DE CARGA
+   ========================================================= */
 
-.cliente-info-bloque,
-.cliente-info-seccion {
-  margin-bottom: 20px;
+.admin-consultas-estado,
+.chat-cargando {
+  min-height: 400px;
 
-  padding: 18px;
+  padding: 40px;
 
-  background: #f8f2e8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  background: #ffffff;
 
   border:
-    1px solid
-    #e6d9c6;
+    1px solid var(--admin-borde);
 
-  border-radius: 10px;
+  border-radius: 18px;
+
+  box-shadow: var(--admin-sombra);
 }
 
 
-.cliente-info-seccion h3 {
-  margin: 0 0 14px;
+.admin-consultas-estado svg,
+.chat-cargando svg {
+  color: var(--admin-oliva);
+}
 
-  color: #4d4b00;
+
+.admin-consultas-estado h3 {
+  margin: 13px 0 6px;
+
+  color: var(--admin-oliva);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 1.4rem;
+}
+
+
+.admin-consultas-estado p,
+.chat-cargando p {
+  margin: 0;
+
+  color: var(--admin-secundario);
+}
+
+
+/* =========================================================
+   SCROLL DE MENSAJES
+   ========================================================= */
+
+.chat-mensajes::-webkit-scrollbar,
+.mensajes-conversacion::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+.chat-mensajes::-webkit-scrollbar-thumb,
+.mensajes-conversacion::-webkit-scrollbar-thumb {
+  background: #d5c4af;
+
+  border-radius: 999px;
+}
+
+
+.chat-mensajes::-webkit-scrollbar-track,
+.mensajes-conversacion::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* =========================================================
+   ADMIN CONSULTAS - CAFÉ DE ORIGEN
+   PARTE 3
+   MODAL CLIENTE + PEDIDO + RESPONSIVE
+   ========================================================= */
+
+
+/* =========================================================
+   FONDO DEL MODAL
+   ========================================================= */
+
+.cliente-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background:
+    rgba(25, 20, 15, 0.58);
+
+  backdrop-filter: blur(4px);
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.cliente-modal {
+  position: relative;
+
+  width: min(600px, 100%);
+  max-height: calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  background: #fffdf9;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 28px 75px rgba(25, 18, 12, 0.28);
+}
+
+
+/* =========================================================
+   HEADER MODAL
+   ========================================================= */
+
+.cliente-modal-header {
+  position: relative;
+
+  padding: 25px 28px 20px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 14px;
+
+  box-sizing: border-box;
+
+  border-bottom:
+    1px solid var(--admin-borde);
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9 0%,
+      #faf4e9 100%
+    );
+}
+
+
+.cliente-modal-icono {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--admin-oliva);
+  color: #ffffff;
+
+  box-shadow:
+    0 7px 17px rgba(82, 83, 0, 0.18);
+}
+
+
+.cliente-modal-etiqueta {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--admin-oliva);
+
+  font-size: 0.68rem;
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+}
+
+
+.cliente-modal-header h2 {
+  margin: 0 0 5px;
+
+  color: var(--admin-cafe);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+
+.cliente-modal-header p {
+  margin: 0;
+
+  color: var(--admin-secundario);
+
+  font-size: 0.86rem;
+}
+
+
+/* =========================================================
+   BOTÓN X DEL MODAL
+   Si tu JSX tiene botón con alguna de estas clases
+   ========================================================= */
+
+.cliente-modal-cerrar,
+.modal-cerrar,
+.btn-cerrar-modal {
+  position: absolute;
+
+  top: 16px;
+  right: 16px;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #75665d;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.cliente-modal-cerrar:hover,
+.modal-cerrar:hover,
+.btn-cerrar-modal:hover {
+  background: #f4ecdf;
+
+  color: var(--admin-cafe);
+
+  transform: rotate(4deg);
+}
+
+
+/* =========================================================
+   CONTENIDO DEL MODAL
+   ========================================================= */
+
+.cliente-modal-contenido {
+  padding: 22px 28px 28px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BLOQUE INFORMACIÓN DEL CLIENTE
+   ========================================================= */
+
+.cliente-info-bloque {
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  background: #f8f2e7;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 14px;
+}
+
+
+/* =========================================================
+   CARGANDO INFORMACIÓN
+   ========================================================= */
+
+.cliente-info-cargando {
+  margin-bottom: 14px;
+
+  padding: 10px 12px;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: var(--admin-secundario);
+
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   CAMPO INFORMACIÓN
+   ========================================================= */
+
+.cliente-info-item {
+  padding: 11px 0;
+
+  border-bottom:
+    1px solid rgba(199, 181, 156, 0.55);
+}
+
+
+.cliente-info-item:first-of-type {
+  padding-top: 2px;
+}
+
+
+.cliente-info-item:last-child {
+  padding-bottom: 2px;
+
+  border-bottom: none;
+}
+
+
+.cliente-info-item > span {
+  margin-bottom: 5px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  color: #8a796d;
+
+  font-size: 0.69rem;
+  font-weight: 900;
+
+  letter-spacing: 0.03em;
+}
+
+
+.cliente-info-item > span svg {
+  flex-shrink: 0;
+
+  color: var(--admin-oliva);
+}
+
+
+.cliente-info-item > strong {
+  display: block;
+
+  color: var(--admin-cafe);
+
+  font-size: 0.94rem;
+  font-weight: 800;
+
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   PEDIDO ASOCIADO EN EL MODAL
+   ========================================================= */
+
+.cliente-pedido-bloque {
+  margin-top: 18px;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  background: #fffaf1;
+
+  border:
+    1px solid var(--admin-borde);
+
+  border-radius: 14px;
+}
+
+
+/* =========================================================
+   ENCABEZADO DEL PEDIDO
+   ========================================================= */
+
+.cliente-pedido-encabezado {
+  padding-bottom: 14px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  border-bottom:
+    1px solid var(--admin-borde);
+}
+
+
+.cliente-pedido-encabezado > svg {
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  color: var(--admin-oliva);
+}
+
+
+.cliente-pedido-encabezado span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #8b796c;
+
+  font-size: 0.68rem;
+  font-weight: 900;
+
+  letter-spacing: 0.04em;
+}
+
+
+.cliente-pedido-encabezado strong {
+  display: block;
+
+  color: var(--admin-cafe);
+
+  font-size: 0.9rem;
+  font-weight: 900;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   CARGANDO PEDIDO
+   ========================================================= */
+
+.cliente-pedido-cargando {
+  padding: 18px 0 4px;
+
+  color: var(--admin-secundario);
+
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   PRODUCTOS
+   ========================================================= */
+
+.cliente-productos {
+  padding-top: 16px;
+}
+
+
+.cliente-productos h3 {
+  margin: 0 0 12px;
+
+  color: var(--admin-oliva);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
   font-size: 1rem;
 }
 
 
 /* =========================================================
-   INFO ITEM
-========================================================= */
+   PRODUCTO INDIVIDUAL
+   ========================================================= */
 
-.cliente-info-item {
-  margin-bottom: 14px;
+.cliente-producto-item {
+  padding: 10px 0;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  border-bottom:
+    1px solid #eee1cf;
+}
+
+
+.cliente-producto-item:last-child {
+  border-bottom: none;
+}
+
+
+.cliente-producto-cantidad {
+  min-width: 44px;
+
+  color: var(--admin-oliva);
+
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+
+.cliente-producto-info {
+  min-width: 0;
 
   display: flex;
   flex-direction: column;
 
-  gap: 4px;
+  gap: 2px;
 }
 
 
-.cliente-info-item:last-child {
-  margin-bottom: 0;
+.cliente-producto-info strong {
+  color: var(--admin-cafe);
+
+  font-size: 0.9rem;
+  font-weight: 900;
 }
 
 
-.cliente-info-item span {
-  color: #85796f;
+.cliente-producto-info span {
+  color: var(--admin-secundario);
 
-  font-size: 0.78rem;
-
-  text-transform: uppercase;
-
-  font-weight: 700;
-
-  letter-spacing: 0.3px;
-}
-
-
-.cliente-info-item strong {
-  color: #4a2513;
-
-  font-size: 0.95rem;
-
-  word-break: break-word;
+  font-size: 0.8rem;
 }
 
 
 /* =========================================================
-   WHATSAPP DENTRO DEL MODAL
-========================================================= */
+   SIN PRODUCTOS
+   ========================================================= */
 
-.btn-whatsapp-modal {
-  width: 100%;
+.cliente-productos-vacio {
+  margin: 0;
 
-  min-height: 48px;
+  padding: 12px;
 
-  margin: 0 0 12px;
+  border-radius: 9px;
 
-  font-size: 0.95rem;
+  background: #ffffff;
+
+  color: var(--admin-secundario);
+
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
 
 /* =========================================================
-   VOLVER A LA CONSULTA
-========================================================= */
+   TOTAL PRODUCTOS
+   ========================================================= */
 
-.btn-volver-chat {
-  width: 100%;
+.cliente-pedido-total {
+  margin-top: 13px;
 
-  min-height: 48px;
+  padding-top: 13px;
 
-  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-top:
+    1px solid var(--admin-borde);
+}
+
+
+.cliente-pedido-total span {
+  color: #8b796c;
+
+  font-size: 0.69rem;
+  font-weight: 900;
+
+  letter-spacing: 0.03em;
+}
+
+
+.cliente-pedido-total strong {
+  min-width: 38px;
+  height: 34px;
+
+  padding: 0 9px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #4d4b00;
+  box-sizing: border-box;
+
+  border-radius: 9px;
+
+  background: var(--admin-oliva);
 
   color: #ffffff;
 
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   BOTÓN WHATSAPP DEL MODAL
+   ========================================================= */
+
+.btn-whatsapp-modal {
+  width: 100%;
+  min-height: 50px;
+
+  margin-top: 20px;
+
+  padding: 10px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+
+  background: var(--admin-whatsapp);
+  color: #ffffff;
 
   font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 7px 18px rgba(32, 201, 104, 0.20);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.btn-whatsapp-modal:hover {
+  background: var(--admin-whatsapp-hover);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 9px 22px rgba(32, 201, 104, 0.27);
+}
+
+
+.btn-whatsapp-modal:disabled {
+  background: #aeb9b1;
+
+  color: #eef2ef;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   VOLVER A CONSULTA
+   ========================================================= */
+
+.btn-volver-consulta {
+  width: 100%;
+  min-height: 48px;
+
+  margin-top: 10px;
+
+  padding: 10px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid var(--admin-oliva);
+
+  border-radius: 10px;
+
+  background: var(--admin-oliva);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 900;
 
   cursor: pointer;
 
@@ -1254,43 +2500,88 @@
 }
 
 
-.btn-volver-chat:hover {
-  background: #676400;
+.btn-volver-consulta:hover {
+  background: var(--admin-oliva-hover);
 
   transform: translateY(-1px);
 }
 
 
 /* =========================================================
+   SCROLL DEL MODAL
+   ========================================================= */
+
+.cliente-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+.cliente-modal::-webkit-scrollbar-thumb {
+  background: #cdbda8;
+
+  border-radius: 999px;
+}
+
+
+.cliente-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+/* =========================================================
    TABLET
-========================================================= */
+   ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
 
-  .admin-conversaciones-page {
+  .admin-conversaciones-page,
+  .admin-consultas-page {
     padding:
-      30px
-      16px
+      28px
+      18px
       45px;
+  }
+
+
+  .admin-consultas-resumen,
+  .admin-estadisticas,
+  .estadisticas-consultas {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+
+  .admin-consultas-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+
+  .admin-consultas-buscador,
+  .buscador-consultas {
+    width: 100%;
   }
 
 
   .admin-chat-layout {
     grid-template-columns:
-      320px
+      minmax(280px, 330px)
       minmax(0, 1fr);
   }
 
 
-  .admin-conversaciones-header h1 {
-    font-size: 2rem;
+  .chat-header,
+  .panel-conversacion-header {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 
 
-  .chat-header {
-    padding:
-      18px
-      18px;
+  .chat-header-acciones {
+    width: 100%;
+
+    justify-content: flex-start;
   }
 
 }
@@ -1298,113 +2589,319 @@
 
 /* =========================================================
    MÓVIL
-========================================================= */
+   ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
 
-  .admin-chat-layout {
-    grid-template-columns: 1fr;
+  .admin-conversaciones-page,
+  .admin-consultas-page {
+    padding:
+      20px
+      12px
+      35px;
   }
 
 
-  .lista-conversaciones {
-    border-right: none;
+  /* -------------------------------------------------------
+     HERO
+     ------------------------------------------------------- */
 
-    border-bottom:
-      1px solid
-      #e7ddd0;
+  .admin-conversaciones-header,
+  .admin-consultas-hero {
+    margin-bottom: 18px;
   }
 
 
-  .chat-vacio {
-    min-height: 300px;
+  .admin-conversaciones-header h1,
+  .admin-consultas-hero h1 {
+    font-size: 2rem;
   }
 
 
-  .chat-header {
-    flex-direction: column;
-
-    align-items: flex-start;
+  .admin-conversaciones-header > p,
+  .admin-consultas-hero p {
+    font-size: 0.9rem;
   }
 
 
-  .chat-header-acciones {
-    width: 100%;
+  /* -------------------------------------------------------
+     ESTADÍSTICAS
+     ------------------------------------------------------- */
 
-    display: grid;
-
+  .admin-consultas-resumen,
+  .admin-estadisticas,
+  .estadisticas-consultas {
     grid-template-columns: 1fr;
 
     gap: 8px;
   }
 
 
+  .admin-resumen-card,
+  .admin-estadistica,
+  .estadistica-consulta {
+    min-height: 58px;
+
+    padding: 10px 13px;
+  }
+
+
+  .admin-resumen-card strong,
+  .admin-estadistica strong,
+  .estadistica-consulta strong {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+
+  /* -------------------------------------------------------
+     FILTROS
+     ------------------------------------------------------- */
+
+  .admin-consultas-filtros {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .admin-consultas-filtros button {
+    width: 100%;
+
+    padding:
+      8px
+      10px;
+  }
+
+
+  /* -------------------------------------------------------
+     CHAT
+     ------------------------------------------------------- */
+
+  .admin-chat-layout {
+    display: block;
+
+    min-height: auto;
+
+    overflow: visible;
+
+    border-radius: 14px;
+  }
+
+
+  .lista-conversaciones {
+    width: 100%;
+
+    border-right: none;
+
+    border-bottom:
+      1px solid var(--admin-borde);
+  }
+
+
+  .lista-conversaciones-contenido {
+    max-height: 390px;
+  }
+
+
+  .chat-panel,
+  .panel-conversacion {
+    width: 100%;
+  }
+
+
+  /* -------------------------------------------------------
+     HEADER DEL CHAT
+     ------------------------------------------------------- */
+
+  .chat-header,
+  .panel-conversacion-header {
+    padding: 15px;
+
+    gap: 13px;
+  }
+
+
+  .chat-header-acciones {
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+
+    gap: 8px;
+  }
+
+
   .estado-conversacion,
-  .btn-whatsapp-admin,
-  .btn-info-cliente {
+  .chat-estado {
+    grid-column:
+      1 / -1;
+
+    width: fit-content;
+  }
+
+
+  .btn-whatsapp,
+  .chat-btn-whatsapp,
+  .btn-info-cliente,
+  .chat-btn-info {
     width: 100%;
 
-    min-height: 44px;
+    padding:
+      9px
+      10px;
+
+    font-size: 0.78rem;
   }
 
 
-  .chat-input-area {
-    flex-direction: column;
+  /* -------------------------------------------------------
+     PEDIDO
+     ------------------------------------------------------- */
+
+  .chat-pedido-resumen,
+  .pedido-asociado-resumen,
+  .chat-pedido {
+    margin:
+      12px
+      12px
+      0;
   }
 
 
-  .chat-input-area button {
-    width: 100%;
+  /* -------------------------------------------------------
+     MENSAJES
+     ------------------------------------------------------- */
 
-    min-height: 46px;
+  .chat-mensajes,
+  .mensajes-conversacion {
+    min-height: 400px;
+
+    padding: 16px 12px;
   }
 
 
-  .mensaje {
+  .mensaje-burbuja,
+  .chat-mensaje {
     max-width: 88%;
   }
 
 
-  .admin-consultas-filtros {
+  /* -------------------------------------------------------
+     RESPUESTA
+     ------------------------------------------------------- */
+
+  .chat-respuesta,
+  .form-respuesta,
+  .chat-formulario {
+    padding: 11px;
+
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .chat-respuesta button,
+  .form-respuesta button,
+  .chat-formulario button,
+  .btn-enviar-mensaje {
     width: 100%;
+  }
+
+
+  /* -------------------------------------------------------
+     MODAL
+     ------------------------------------------------------- */
+
+  .cliente-modal-overlay {
+    padding: 10px;
+  }
+
+
+  .cliente-modal {
+    width: 100%;
+    max-height: calc(100vh - 20px);
+
+    border-radius: 15px;
+  }
+
+
+  .cliente-modal-header {
+    padding:
+      20px
+      18px
+      17px;
+  }
+
+
+  .cliente-modal-icono {
+    width: 42px;
+    height: 42px;
+  }
+
+
+  .cliente-modal-header h2 {
+    padding-right: 28px;
+
+    font-size: 1.35rem;
+  }
+
+
+  .cliente-modal-contenido {
+    padding:
+      16px
+      16px
+      20px;
+  }
+
+
+  .cliente-info-bloque,
+  .cliente-pedido-bloque {
+    padding: 15px;
   }
 
 }
 
 
 /* =========================================================
-   CELULAR PEQUEÑO
-========================================================= */
+   CELULARES PEQUEÑOS
+   ========================================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 430px) {
 
-  .admin-conversaciones-page {
+  .admin-conversaciones-page,
+  .admin-consultas-page {
     padding:
-      22px
-      10px
-      35px;
+      16px
+      9px
+      30px;
   }
 
 
-  .admin-conversaciones-header h1 {
-    font-size: 1.7rem;
+  .admin-conversaciones-header h1,
+  .admin-consultas-hero h1 {
+    font-size: 1.75rem;
   }
 
 
-  .btn-volver-admin {
-    width: 100%;
+  .admin-consultas-filtros {
+    grid-template-columns: 1fr 1fr;
   }
 
 
-  .admin-chat-layout {
-    border-radius: 12px;
-  }
-
-
-  .lista-conversaciones > h2 {
+  .lista-conversaciones > h2,
+  .lista-conversaciones-header {
     padding:
-      18px
-      16px;
+      0
+      15px;
+
+    font-size: 1.25rem;
   }
 
 
@@ -1415,33 +2912,77 @@
   }
 
 
-  .chat-mensajes {
-    padding:
-      16px;
-  }
-
-
-  .modal-cliente {
-    padding:
-      28px
-      18px
-      20px;
-  }
-
-
-  .admin-consultas-filtros {
-    display: grid;
-
+  .chat-header-acciones {
     grid-template-columns: 1fr;
+  }
 
+
+  .estado-conversacion,
+  .chat-estado {
+    grid-column: auto;
+  }
+
+
+  .mensaje-burbuja,
+  .chat-mensaje {
+    max-width: 94%;
+  }
+
+
+  .cliente-modal-header {
+    gap: 10px;
+  }
+
+
+  .cliente-modal-header h2 {
+    font-size: 1.22rem;
+  }
+
+
+  .cliente-info-item > strong {
+    font-size: 0.88rem;
+  }
+
+
+  .cliente-producto-item {
     gap: 7px;
   }
 
 
-  .admin-consultas-filtros button {
-    width: 100%;
-
-    border-radius: 8px;
+  .cliente-producto-cantidad {
+    min-width: 38px;
   }
 
+}
+
+
+/* =========================================================
+   AJUSTES GENERALES FINALES
+   ========================================================= */
+
+.admin-conversaciones-page *,
+.admin-consultas-page *,
+.cliente-modal-overlay * {
+  box-sizing: border-box;
+}
+
+
+.admin-conversaciones-page button,
+.admin-consultas-page button,
+.cliente-modal-overlay button {
+  font-family: inherit;
+}
+
+
+.admin-conversaciones-page button:focus-visible,
+.admin-consultas-page button:focus-visible,
+.cliente-modal-overlay button:focus-visible,
+.admin-conversaciones-page input:focus-visible,
+.admin-consultas-page input:focus-visible,
+.admin-conversaciones-page textarea:focus-visible,
+.admin-consultas-page textarea:focus-visible {
+  outline:
+    3px solid rgba(82, 83, 0, 0.22);
+
+  outline-offset: 2px;
 }

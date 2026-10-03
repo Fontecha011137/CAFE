@@ -31,6 +31,7 @@ function Register() {
   const [formData, setFormData] = useState({
     nombre: "",
     celular: "",
+    direccion: "",
     email: "",
     password: "",
     confirmarPassword: ""
@@ -82,6 +83,9 @@ function Register() {
     const celular =
       formData.celular.trim();
 
+    const direccion =
+      formData.direccion.trim();
+
     const email =
       formData.email
         .trim()
@@ -111,6 +115,21 @@ function Register() {
 
       setMensaje(
         "Ingrese un número de celular válido de 10 dígitos."
+      );
+
+      return;
+
+    }
+
+
+    // ===================================================
+    // VALIDAR DIRECCIÓN
+    // ===================================================
+
+    if (direccion.length < 5) {
+
+      setMensaje(
+        "Ingresa una dirección válida."
       );
 
       return;
@@ -189,6 +208,8 @@ function Register() {
           nombre,
 
           celular,
+
+          direccion,
 
           email,
 
@@ -336,6 +357,19 @@ function Register() {
             maxLength={10}
             inputMode="numeric"
             autoComplete="tel"
+            required
+          />
+
+
+          {/* DIRECCIÓN */}
+
+          <input
+            type="text"
+            name="direccion"
+            placeholder="Dirección de entrega"
+            value={formData.direccion}
+            onChange={handleChange}
+            autoComplete="street-address"
             required
           />
 
