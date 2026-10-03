@@ -146,6 +146,7 @@ function AdminConsultas() {
 
     const unsubscribe =
       onSnapshot(
+
         conversacionesRef,
 
         (snapshot) => {
@@ -158,6 +159,7 @@ function AdminConsultas() {
 
 
           // Ordenar por fecha más reciente
+
           lista.sort((a, b) => {
 
             const fechaA =
@@ -194,13 +196,11 @@ function AdminConsultas() {
                 return actual;
               }
 
-
               const actualizada =
                 lista.find(
                   (item) =>
                     item.id === actual.id
                 );
-
 
               return actualizada || actual;
 
@@ -219,6 +219,7 @@ function AdminConsultas() {
           setCargando(false);
 
         }
+
       );
 
 
@@ -319,7 +320,9 @@ function AdminConsultas() {
       tipo.includes("pedido") ||
       pedidoId
     ) {
+
       return "envio";
+
     }
 
 
@@ -583,6 +586,7 @@ function AdminConsultas() {
 
     const unsubscribe =
       onSnapshot(
+
         mensajesQuery,
 
         (snapshot) => {
@@ -608,6 +612,7 @@ function AdminConsultas() {
           );
 
         }
+
       );
 
 
@@ -649,7 +654,9 @@ function AdminConsultas() {
       !conversacionSeleccionada?.id ||
       enviando
     ) {
+
       return;
+
     }
 
 
@@ -775,9 +782,7 @@ function AdminConsultas() {
     );
 
   };
-
-
-  // ===================================================
+    // ===================================================
   // WHATSAPP
   // ===================================================
 
@@ -786,6 +791,10 @@ function AdminConsultas() {
     const celular =
       obtenerCelularCliente();
 
+
+    // =================================================
+    // VALIDAR CELULAR
+    // =================================================
 
     if (!celular) {
 
@@ -803,9 +812,11 @@ function AdminConsultas() {
         .replace(/\D/g, "");
 
 
-    // Colombia:
-    // si el usuario guardó 10 dígitos,
-    // agregamos indicativo 57.
+    // =================================================
+    // INDICATIVO COLOMBIA
+    // =================================================
+    // Si el usuario guardó un celular colombiano
+    // de 10 dígitos, agregamos 57.
 
     if (numero.length === 10) {
 
@@ -828,32 +839,102 @@ function AdminConsultas() {
     }
 
 
+    // =================================================
+    // NOMBRE DEL CLIENTE
+    // =================================================
+
     const nombre =
       obtenerNombreCliente(
         conversacionSeleccionada
       );
 
 
-    const pedidoId =
-      obtenerPedidoId(
-        conversacionSeleccionada
+    // =================================================
+    // PRODUCTOS DEL PEDIDO
+    // =================================================
+
+    const productosWhatsApp =
+      pedidoSeleccionado?.productos ||
+      pedidoSeleccionado?.items ||
+      pedidoSeleccionado?.carrito ||
+      [];
+
+
+    // =================================================
+    // CONSTRUIR MENSAJE
+    // =================================================
+
+    let mensaje =
+      `Hola ${nombre}, te escribimos de Café de Origen.`;
+
+
+    // =================================================
+    // AGREGAR PRODUCTOS
+    // =================================================
+
+    if (productosWhatsApp.length > 0) {
+
+      mensaje +=
+        `\n\nEstos son los productos de tu pedido:\n`;
+
+
+      productosWhatsApp.forEach(
+        (producto) => {
+
+          const cantidad =
+            Number(
+              producto.cantidad ||
+              producto.qty ||
+              1
+            );
+
+
+          const nombreProducto =
+            producto.nombre ||
+            producto.producto ||
+            producto.titulo ||
+            "Producto";
+
+
+          const presentacion =
+            producto.presentacion ||
+            producto.peso ||
+            producto.tamano ||
+            producto.tamaño ||
+            producto.gramos ||
+            "";
+
+
+          mensaje +=
+            `\n☕ ${cantidad} × ${nombreProducto}${
+
+              presentacion
+                ? ` ${presentacion}`
+                : ""
+
+            }`;
+
+        }
       );
 
 
-    let mensaje =
-      `Hola ${nombre}, te escribimos de Café de Origen`;
+      mensaje +=
+        `\n\nQueremos comunicarnos contigo para coordinar tu pedido.`;
 
+    } else {
 
-    if (pedidoId) {
+      // Si todavía no hay información de productos,
+      // NO mostramos el ID interno del pedido.
 
       mensaje +=
-        ` sobre tu pedido #${pedidoId}`;
+        `\n\nQueremos comunicarnos contigo para coordinar tu pedido.`;
 
     }
 
 
-    mensaje += ".";
-
+    // =================================================
+    // ABRIR WHATSAPP
+    // =================================================
 
     const url =
       `https://wa.me/${numero}?text=${encodeURIComponent(
@@ -900,13 +981,17 @@ function AdminConsultas() {
             ).toLowerCase();
 
 
+          // =============================================
           // FILTRO
+          // =============================================
 
           if (
             filtro === "envios" &&
             tipo !== "envio"
           ) {
+
             return false;
+
           }
 
 
@@ -914,7 +999,9 @@ function AdminConsultas() {
             filtro === "consultas" &&
             tipo !== "consulta"
           ) {
+
             return false;
+
           }
 
 
@@ -925,14 +1012,20 @@ function AdminConsultas() {
               estado.includes("esperando admin")
             )
           ) {
+
             return false;
+
           }
 
 
+          // =============================================
           // BUSCADOR
+          // =============================================
 
           if (!textoBusqueda) {
+
             return true;
+
           }
 
 
@@ -1002,7 +1095,9 @@ function AdminConsultas() {
           conversacion
         ) === "envio"
     ).length;
-      // ===================================================
+
+
+  // ===================================================
   // PRODUCTOS DEL PEDIDO
   // ===================================================
 
@@ -1107,6 +1202,7 @@ function AdminConsultas() {
     // administrador siempre vea el perfil más reciente.
 
     await Promise.all([
+
       cargarPerfilCliente(
         conversacionSeleccionada
       ),
@@ -1114,6 +1210,7 @@ function AdminConsultas() {
       cargarPedido(
         conversacionSeleccionada
       )
+
     ]);
 
   };
@@ -1349,10 +1446,6 @@ function AdminConsultas() {
 
         ) : conversacionesFiltradas.length === 0 ? (
 
-          /* ===========================================
-             SIN CONVERSACIONES
-          =========================================== */
-
           <div className="admin-consultas-estado">
 
             <MessageCircle size={38} />
@@ -1369,10 +1462,6 @@ function AdminConsultas() {
           </div>
 
         ) : (
-
-          /* ===========================================
-             LAYOUT CHAT
-          =========================================== */
 
           <div className="admin-chat-layout">
 
@@ -1391,9 +1480,7 @@ function AdminConsultas() {
                 </h2>
 
                 <span>
-                  {
-                    conversacionesFiltradas.length
-                  }
+                  {conversacionesFiltradas.length}
                 </span>
 
               </div>
@@ -1443,10 +1530,6 @@ function AdminConsultas() {
                       >
 
 
-                        {/* =============================
-                            NOMBRE
-                        ============================= */}
-
                         <div className="conversacion-superior">
 
                           <strong>
@@ -1455,17 +1538,12 @@ function AdminConsultas() {
                             )}
                           </strong>
 
-
                           <ChevronRight
                             size={18}
                           />
 
                         </div>
 
-
-                        {/* =============================
-                            TIPO
-                        ============================= */}
 
                         <div
                           className={
@@ -1485,9 +1563,7 @@ function AdminConsultas() {
                           ) : (
 
                             <>
-                              <MessageCircle
-                                size={14}
-                              />
+                              <MessageCircle size={14} />
                               CONSULTA
                             </>
 
@@ -1495,10 +1571,6 @@ function AdminConsultas() {
 
                         </div>
 
-
-                        {/* =============================
-                            PEDIDO
-                        ============================= */}
 
                         {pedidoId && (
 
@@ -1511,10 +1583,6 @@ function AdminConsultas() {
                         )}
 
 
-                        {/* =============================
-                            ÚLTIMO MENSAJE
-                        ============================= */}
-
                         <p className="conversacion-preview">
 
                           {obtenerUltimoMensaje(
@@ -1523,10 +1591,6 @@ function AdminConsultas() {
 
                         </p>
 
-
-                        {/* =============================
-                            ESTADO
-                        ============================= */}
 
                         <span className="conversacion-estado">
 
@@ -1546,30 +1610,22 @@ function AdminConsultas() {
               </div>
 
             </aside>
-
-
-            {/* =========================================
+                        {/* =========================================
                 PANEL DERECHO
             ========================================= */}
 
-            <section className="panel-chat">
+            <section className="panel-conversacion">
 
 
               {!conversacionSeleccionada ? (
 
-                /* =====================================
-                   NINGUNA CONVERSACIÓN SELECCIONADA
-                ===================================== */
+                <div className="sin-conversacion-seleccionada">
 
-                <div className="panel-chat-vacio">
+                  <MessageCircle size={46} />
 
-                  <MessageCircle
-                    size={52}
-                  />
-
-                  <h3>
+                  <h2>
                     Selecciona una conversación
-                  </h3>
+                  </h2>
 
                   <p>
                     Elige una consulta de la lista
@@ -1584,9 +1640,9 @@ function AdminConsultas() {
                 <>
 
 
-                  {/* ===================================
-                      CABECERA DEL CHAT
-                  =================================== */}
+                  {/* =====================================
+                      CABECERA DE LA CONVERSACIÓN
+                  ===================================== */}
 
                   <div className="chat-header">
 
@@ -1596,7 +1652,7 @@ function AdminConsultas() {
                       <div className="chat-avatar">
 
                         <CircleUserRound
-                          size={25}
+                          size={28}
                         />
 
                       </div>
@@ -1611,567 +1667,79 @@ function AdminConsultas() {
                         </h2>
 
 
-                        <span>
-                          {
-                            obtenerTipoConversacion(
+                        <div className="chat-header-meta">
+
+                          {obtenerTipoConversacion(
+                            conversacionSeleccionada
+                          ) === "envio" ? (
+
+                            <span className="chat-tipo envio">
+
+                              <Truck size={14} />
+
+                              Solicitud de envío
+
+                            </span>
+
+                          ) : (
+
+                            <span className="chat-tipo consulta">
+
+                              <MessageCircle size={14} />
+
+                              Consulta
+
+                            </span>
+
+                          )}
+
+
+                          <span className="chat-estado">
+
+                            {obtenerEstado(
                               conversacionSeleccionada
-                            ) === "envio"
-                              ? "Solicitud de envío"
-                              : "Consulta"
-                          }
-                        </span>
+                            )}
+
+                          </span>
+
+                        </div>
 
                       </div>
 
                     </div>
 
 
-                    {/* ===============================
+                    {/* ===================================
                         ACCIONES
-                    =============================== */}
+                    =================================== */}
 
                     <div className="chat-header-acciones">
 
 
-                      <span className="chat-estado">
-
-                        {obtenerEstado(
-                          conversacionSeleccionada
-                        )}
-
-                      </span>
-
-
                       <button
                         type="button"
-                        className="btn-whatsapp"
-                        onClick={
-                          abrirWhatsApp
-                        }
-                      >
-                        <Phone size={17} />
-
-                        WhatsApp
-                      </button>
-
-
-                      <button
-                        type="button"
-                        className="btn-info-cliente"
+                        className="chat-info-btn"
                         onClick={
                           abrirInformacionCliente
                         }
                       >
-                        <Info size={17} />
+                        <Info size={18} />
 
                         Información del cliente
                       </button>
 
-                    </div>
 
-                  </div>
-
-
-                  {/* ===================================
-                      RESUMEN DEL PEDIDO EN EL CHAT
-                  =================================== */}
-
-                  {obtenerPedidoId(
-                    conversacionSeleccionada
-                  ) && (
-
-                    <div className="chat-pedido-resumen">
-
-                      <div className="chat-pedido-icono">
-
-                        <ShoppingBag
-                          size={21}
-                        />
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Pedido asociado
-                        </span>
-
-                        <strong>
-                          #
-                          {obtenerPedidoId(
-                            conversacionSeleccionada
-                          )}
-                        </strong>
-
-                      </div>
-
-
-                      {cargandoPedido ? (
-
-                        <span className="chat-pedido-cargando">
-                          Cargando pedido...
-                        </span>
-
-                      ) : productosPedido.length > 0 ? (
-
-                        <span className="chat-pedido-productos">
-
-                          {productosPedido
-                            .map(
-                              (producto) => {
-
-                                const cantidad =
-                                  Number(
-                                    producto.cantidad ||
-                                    producto.qty ||
-                                    1
-                                  );
-
-
-                                const nombre =
-                                  producto.nombre ||
-                                  producto.producto ||
-                                  producto.titulo ||
-                                  "Producto";
-
-
-                                const presentacion =
-                                  producto.presentacion ||
-                                  producto.peso ||
-                                  producto.tamano ||
-                                  producto.tamaño ||
-                                  producto.gramos ||
-                                  "";
-
-
-                                return `${cantidad} × ${nombre}${
-                                  presentacion
-                                    ? ` ${presentacion}`
-                                    : ""
-                                }`;
-
-                              }
-                            )
-                            .join(" · ")}
-
-                        </span>
-
-                      ) : null}
-
-                    </div>
-
-                  )}
-
-
-                  {/* ===================================
-                      MENSAJES
-                  =================================== */}
-
-                  <div className="chat-mensajes">
-
-
-                    {mensajes.length === 0 ? (
-
-                      <div className="chat-sin-mensajes">
-
-                        <MessageCircle
-                          size={30}
-                        />
-
-                        <p>
-                          Esta conversación todavía
-                          no tiene mensajes.
-                        </p>
-
-                      </div>
-
-                    ) : (
-
-                      mensajes.map(
-                        (mensaje) => {
-
-                          const esAdmin =
-                            mensaje.autor === "admin" ||
-                            mensaje.remitente === "admin" ||
-                            mensaje.rol === "admin";
-
-
-                          const texto =
-                            mensaje.texto ||
-                            mensaje.mensaje ||
-                            "";
-
-
-                          const fechaMensaje =
-                            mensaje.fecha ||
-                            mensaje.creado ||
-                            mensaje.fechaCreacion;
-
-
-                          return (
-
-                            <div
-                              key={mensaje.id}
-                              className={
-                                esAdmin
-                                  ? "mensaje-fila admin"
-                                  : "mensaje-fila cliente"
-                              }
-                            >
-
-                              <div
-                                className={
-                                  esAdmin
-                                    ? "mensaje-burbuja admin"
-                                    : "mensaje-burbuja cliente"
-                                }
-                              >
-
-                                <strong>
-
-                                  {esAdmin
-                                    ? "Café de Origen"
-                                    : obtenerNombreCliente(
-                                        conversacionSeleccionada
-                                      )}
-
-                                </strong>
-
-
-                                <p>
-                                  {texto}
-                                </p>
-
-
-                                {fechaMensaje && (
-
-                                  <span className="mensaje-fecha">
-
-                                    {formatearFecha(
-                                      fechaMensaje
-                                    )}
-
-                                  </span>
-
-                                )}
-
-                              </div>
-
-                            </div>
-
-                          );
-
+                      <button
+                        type="button"
+                        className="chat-whatsapp-btn"
+                        onClick={
+                          abrirWhatsApp
                         }
-                      )
-
-                    )}
-
-
-                    <div
-                      ref={
-                        mensajesFinalRef
-                      }
-                    />
-
-                  </div>
-
-
-                  {/* ===================================
-                      ESCRIBIR RESPUESTA
-                  =================================== */}
-
-                <form
-  className="admin-respuesta-form"
-  onSubmit={
-    enviarMensaje
-  }
->
-<textarea
-  className="admin-respuesta-textarea"
-  value={
-    nuevoMensaje
-  }
-  onChange={(e) =>
-    setNuevoMensaje(
-      e.target.value
-    )
-  }
-  placeholder="Escribe una respuesta al cliente..."
-  rows={2}
-  disabled={
-    enviando
-  }
-  onKeyDown={(e) => {
-
-    if (
-      e.key === "Enter" &&
-      !e.shiftKey
-    ) {
-
-      e.preventDefault();
-
-      enviarMensaje(e);
-
-    }
-
-  }}
-/>
-
-                  <button
-  className="admin-respuesta-enviar"
-  type="submit"
-  disabled={
-    enviando ||
-    !nuevoMensaje.trim()
-  }
->
-
-                      <Send size={18} />
-
-                      {enviando
-                        ? "Enviando..."
-                        : "Enviar"}
-
-                    </button>
-
-                  </form>
-
-                </>
-
-              )}
-
-            </section>
-
-          </div>
-
-        )}
-              </main>
-
-
-      {/* =================================================
-          MODAL INFORMACIÓN DEL CLIENTE
-      ================================================= */}
-
-      {mostrarInfoCliente &&
-        conversacionSeleccionada && (
-
-        <div
-          className="cliente-modal-overlay"
-          onClick={
-            cerrarInformacionCliente
-          }
-        >
-
-          <div
-            className="cliente-modal"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-
-
-            {/* ===========================================
-                CABECERA
-            =========================================== */}
-
-            <div className="cliente-modal-header">
-
-              <div className="cliente-modal-icono">
-
-                <CircleUserRound
-                  size={28}
-                />
-
-              </div>
-
-
-              <div>
-
-                <span className="cliente-modal-etiqueta">
-                  CLIENTE
-                </span>
-
-                <h2>
-                  Información del cliente
-                </h2>
-
-                <p>
-                  Datos asociados a esta conversación
-                </p>
-
-              </div>
-
-            </div>
-
-
-            {/* ===========================================
-                CONTENIDO
-            =========================================== */}
-
-            <div className="cliente-modal-contenido">
-
-
-              {/* =========================================
-                  DATOS PERSONALES
-              ========================================= */}
-
-              <div className="cliente-info-bloque">
-
-
-                {/* CARGANDO */}
-
-                {cargandoPerfilCliente && (
-
-                  <div className="cliente-info-cargando">
-
-                    Cargando información del cliente...
-
-                  </div>
-
-                )}
-
-
-                {/* NOMBRE */}
-
-                <div className="cliente-info-item">
-
-                  <span>
-
-                    <CircleUserRound
-                      size={16}
-                    />
-
-                    NOMBRE
-
-                  </span>
-
-                  <strong>
-
-                    {perfilCliente?.nombre ||
-                      obtenerNombreCliente(
-                        conversacionSeleccionada
-                      )}
-
-                  </strong>
-
-                </div>
-
-
-                {/* CORREO */}
-
-                <div className="cliente-info-item">
-
-                  <span>
-
-                    <Mail size={16} />
-
-                    CORREO
-
-                  </span>
-
-                  <strong>
-                    {obtenerEmailCliente()}
-                  </strong>
-
-                </div>
-
-
-                {/* CELULAR */}
-
-                <div className="cliente-info-item">
-
-                  <span>
-
-                    <Phone size={16} />
-
-                    CELULAR / WHATSAPP
-
-                  </span>
-
-                  <strong>
-
-                    {obtenerCelularCliente() ||
-                      "No disponible"}
-
-                  </strong>
-
-                </div>
-
-
-                {/* DIRECCIÓN */}
-
-                <div className="cliente-info-item">
-
-                  <span>
-
-                    <MapPin size={16} />
-
-                    DIRECCIÓN
-
-                  </span>
-
-                  <strong>
-                    {obtenerDireccionCliente()}
-                  </strong>
-
-                </div>
-
-
-                {/* TIPO CLIENTE */}
-
-                <div className="cliente-info-item">
-
-                  <span>
-                    TIPO DE CLIENTE
-                  </span>
-
-                  <strong>
-
-                    {obtenerUidCliente(
-                      conversacionSeleccionada
-                    )
-                      ? "Cliente registrado"
-                      : "Visitante"}
-
-                  </strong>
-
-                </div>
-
-              </div>
-
-
-              {/* =========================================
-                  PEDIDO ASOCIADO
-              ========================================= */}
-
-              {obtenerPedidoId(
-                conversacionSeleccionada
-              ) && (
-
-                <div className="cliente-pedido-bloque">
-
-
-                  <div className="cliente-pedido-encabezado">
-
-                    <ShoppingBag
-                      size={21}
-                    />
-
-                    <div>
-
-                      <span>
-                        PEDIDO ASOCIADO
-                      </span>
-
-                      <strong>
-
-                        #
-                        {obtenerPedidoId(
-                          conversacionSeleccionada
-                        )}
-
-                      </strong>
+                      >
+                        <Phone size={18} />
+
+                        WhatsApp
+                      </button>
 
                     </div>
 
@@ -2179,37 +1747,60 @@ function AdminConsultas() {
 
 
                   {/* =====================================
-                      CARGANDO PEDIDO
+                      INFORMACIÓN DEL PEDIDO
                   ===================================== */}
 
-                  {cargandoPedido ? (
+                  {obtenerPedidoId(
+                    conversacionSeleccionada
+                  ) && (
 
-                    <div className="cliente-pedido-cargando">
+                    <div className="chat-pedido-card">
 
-                      Cargando información del pedido...
 
-                    </div>
+                      <div className="chat-pedido-titulo">
 
-                  ) : pedidoSeleccionado ? (
+                        <ShoppingBag size={20} />
 
-                    <>
+
+                        <div>
+
+                          <strong>
+                            Pedido del cliente
+                          </strong>
+
+
+                          <span>
+                            {
+                              totalProductosPedido
+                            }{" "}
+                            {
+                              totalProductosPedido === 1
+                                ? "producto"
+                                : "productos"
+                            }
+                          </span>
+
+                        </div>
+
+                      </div>
 
 
                       {/* =================================
-                          PRODUCTOS
+                          CARGANDO PEDIDO
                       ================================= */}
 
-                      <div className="cliente-productos">
+                      {cargandoPedido ? (
 
-                        <h3>
-                          Productos solicitados
-                        </h3>
+                        <p className="chat-pedido-cargando">
+                          Cargando información del pedido...
+                        </p>
+
+                      ) : productosPedido.length > 0 ? (
+
+                        <div className="chat-pedido-productos">
 
 
-                        {productosPedido.length >
-                        0 ? (
-
-                          productosPedido.map(
+                          {productosPedido.map(
                             (
                               producto,
                               index
@@ -2223,7 +1814,7 @@ function AdminConsultas() {
                                 );
 
 
-                              const nombre =
+                              const nombreProducto =
                                 producto.nombre ||
                                 producto.producto ||
                                 producto.titulo ||
@@ -2242,24 +1833,27 @@ function AdminConsultas() {
                               return (
 
                                 <div
-                                  className="cliente-producto-item"
+                                  className="chat-pedido-producto"
                                   key={
                                     producto.id ||
-                                    `${nombre}-${index}`
+                                    producto.productoId ||
+                                    `${nombreProducto}-${index}`
                                   }
                                 >
 
-                                  <div className="cliente-producto-cantidad">
+                                  <div className="chat-pedido-producto-icono">
 
-                                    {cantidad} ×
+                                    <ShoppingBag
+                                      size={17}
+                                    />
 
                                   </div>
 
 
-                                  <div className="cliente-producto-info">
+                                  <div className="chat-pedido-producto-info">
 
                                     <strong>
-                                      {nombre}
+                                      {nombreProducto}
                                     </strong>
 
 
@@ -2273,126 +1867,640 @@ function AdminConsultas() {
 
                                   </div>
 
+
+                                  <div className="chat-pedido-producto-cantidad">
+
+                                    {cantidad} ×
+
+                                  </div>
+
                                 </div>
 
                               );
 
                             }
-                          )
-
-                        ) : (
-
-                          <p className="cliente-productos-vacio">
-
-                            No se encontraron productos
-                            asociados a este pedido.
-
-                          </p>
-
-                        )}
-
-                      </div>
-
-
-                      {/* =================================
-                          TOTAL PRODUCTOS
-                      ================================= */}
-
-                      <div className="cliente-pedido-total">
-
-                        <span>
-                          TOTAL DE PRODUCTOS
-                        </span>
-
-                        <strong>
-                          {totalProductosPedido}
-                        </strong>
-
-                      </div>
-
-
-                      {/* =================================
-                          ESTADO DEL PEDIDO
-                      ================================= */}
-
-                      {pedidoSeleccionado.estado && (
-
-                        <div className="cliente-info-item">
-
-                          <span>
-                            ESTADO DEL PEDIDO
-                          </span>
-
-                          <strong>
-                            {pedidoSeleccionado.estado}
-                          </strong>
+                          )}
 
                         </div>
 
+                      ) : (
+
+                        <p className="chat-pedido-sin-productos">
+
+                          No fue posible obtener
+                          los productos de este pedido.
+
+                        </p>
+
                       )}
-
-                    </>
-
-                  ) : (
-
-                    <div className="cliente-pedido-cargando">
-
-                      No fue posible encontrar la
-                      información del pedido.
 
                     </div>
 
                   )}
 
-                </div>
+
+                  {/* =====================================
+                      ÁREA DE MENSAJES
+                  ===================================== */}
+
+                  <div className="chat-mensajes">
+
+
+                    {/* ===================================
+                        MENSAJE INICIAL / CONSULTA
+                    =================================== */}
+
+                    {(
+                      conversacionSeleccionada.mensaje ||
+                      conversacionSeleccionada.consulta ||
+                      conversacionSeleccionada.descripcion
+                    ) &&
+                    mensajes.length === 0 && (
+
+                      <div className="mensaje-fila cliente">
+
+                        <div className="mensaje-burbuja cliente">
+
+                          <p>
+
+                            {
+                              conversacionSeleccionada.mensaje ||
+                              conversacionSeleccionada.consulta ||
+                              conversacionSeleccionada.descripcion
+                            }
+
+                          </p>
+
+
+                          <span>
+                            Cliente
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                    )}
+
+
+                    {/* ===================================
+                        MENSAJES DE FIRESTORE
+                    =================================== */}
+
+                    {mensajes.map(
+                      (mensaje) => {
+
+                        const autor =
+                          String(
+                            mensaje.autor ||
+                            mensaje.remitente ||
+                            mensaje.tipo ||
+                            "cliente"
+                          ).toLowerCase();
+
+
+                        const esAdmin =
+                          autor === "admin" ||
+                          autor === "administrador";
+
+
+                        const texto =
+                          mensaje.texto ||
+                          mensaje.mensaje ||
+                          "";
+
+
+                        return (
+
+                          <div
+                            key={mensaje.id}
+                            className={
+                              esAdmin
+                                ? "mensaje-fila admin"
+                                : "mensaje-fila cliente"
+                            }
+                          >
+
+                            <div
+                              className={
+                                esAdmin
+                                  ? "mensaje-burbuja admin"
+                                  : "mensaje-burbuja cliente"
+                              }
+                            >
+
+                              <p>
+                                {texto}
+                              </p>
+
+
+                              <span>
+
+                                {
+                                  esAdmin
+                                    ? "Administrador"
+                                    : obtenerNombreCliente(
+                                        conversacionSeleccionada
+                                      )
+                                }
+
+                                {mensaje.fecha && (
+                                  <>
+                                    {" · "}
+                                    {formatearFecha(
+                                      mensaje.fecha
+                                    )}
+                                  </>
+                                )}
+
+                              </span>
+
+                            </div>
+
+                          </div>
+
+                        );
+
+                      }
+                    )}
+
+
+                    <div
+                      ref={
+                        mensajesFinalRef
+                      }
+                    />
+
+                  </div>
+
+
+                  {/* =====================================
+                      FORMULARIO PARA RESPONDER
+                  ===================================== */}
+
+                  <form
+                    className="admin-respuesta-form"
+                    onSubmit={
+                      enviarMensaje
+                    }
+                  >
+
+                    <textarea
+                      className="admin-respuesta-textarea"
+                      value={
+                        nuevoMensaje
+                      }
+                      onChange={(e) =>
+                        setNuevoMensaje(
+                          e.target.value
+                        )
+                      }
+                      placeholder="Escribe una respuesta al cliente..."
+                      rows={2}
+                      disabled={
+                        enviando
+                      }
+                      onKeyDown={(e) => {
+
+                        if (
+                          e.key === "Enter" &&
+                          !e.shiftKey
+                        ) {
+
+                          e.preventDefault();
+
+                          enviarMensaje(e);
+
+                        }
+
+                      }}
+                    />
+
+
+                    <button
+                      className="admin-respuesta-enviar"
+                      type="submit"
+                      disabled={
+                        enviando ||
+                        !nuevoMensaje.trim()
+                      }
+                    >
+
+                      <Send size={18} />
+
+
+                      {
+                        enviando
+                          ? "Enviando..."
+                          : "Enviar"
+                      }
+
+                    </button>
+
+                  </form>
+
+                </>
 
               )}
 
+            </section>
 
-              {/* =========================================
-                  WHATSAPP
-              ========================================= */}
+          </div>
+
+        )}
+
+      </main>
+            {/* =================================================
+          MODAL INFORMACIÓN DEL CLIENTE
+      ================================================= */}
+
+      {mostrarInfoCliente &&
+        conversacionSeleccionada && (
+
+        <div
+          className="modal-cliente-overlay"
+          onClick={
+            cerrarInformacionCliente
+          }
+        >
+
+          <div
+            className="modal-cliente"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+
+
+            {/* ===========================================
+                CABECERA DEL MODAL
+            =========================================== */}
+
+            <div className="modal-cliente-header">
+
+              <div>
+
+                <span className="modal-cliente-etiqueta">
+                  Información del cliente
+                </span>
+
+                <h2>
+                  {obtenerNombreCliente(
+                    conversacionSeleccionada
+                  )}
+                </h2>
+
+              </div>
+
 
               <button
                 type="button"
-                className="btn-whatsapp-modal"
-                onClick={
-                  abrirWhatsApp
-                }
-                disabled={
-                  !obtenerCelularCliente()
-                }
-              >
-
-                <Phone size={19} />
-
-                {obtenerCelularCliente()
-                  ? "Contactar por WhatsApp"
-                  : "WhatsApp no disponible"}
-
-              </button>
-
-
-              {/* =========================================
-                  VOLVER
-              ========================================= */}
-
-              <button
-                type="button"
-                className="btn-volver-consulta"
+                className="modal-cliente-cerrar"
                 onClick={
                   cerrarInformacionCliente
                 }
+                aria-label="Cerrar"
               >
-
-                <ArrowLeft size={18} />
-
-                Volver a la consulta
-
+                ×
               </button>
 
-
             </div>
+
+
+            {/* ===========================================
+                CARGANDO PERFIL
+            =========================================== */}
+
+            {cargandoPerfilCliente ? (
+
+              <div className="modal-cliente-cargando">
+
+                <p>
+                  Cargando información del cliente...
+                </p>
+
+              </div>
+
+            ) : (
+
+              <>
+
+
+                {/* =======================================
+                    DATOS DEL CLIENTE
+                ======================================= */}
+
+                <div className="modal-cliente-datos">
+
+
+                  {/* NOMBRE */}
+
+                  <div className="modal-cliente-dato">
+
+                    <div className="modal-cliente-icono">
+
+                      <CircleUserRound
+                        size={20}
+                      />
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Nombre
+                      </span>
+
+                      <strong>
+                        {obtenerNombreCliente(
+                          conversacionSeleccionada
+                        )}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* CORREO */}
+
+                  <div className="modal-cliente-dato">
+
+                    <div className="modal-cliente-icono">
+
+                      <Mail size={20} />
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Correo electrónico
+                      </span>
+
+                      <strong>
+                        {obtenerEmailCliente()}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* CELULAR */}
+
+                  <div className="modal-cliente-dato">
+
+                    <div className="modal-cliente-icono">
+
+                      <Phone size={20} />
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Celular
+                      </span>
+
+                      <strong>
+
+                        {
+                          obtenerCelularCliente() ||
+                          "No disponible"
+                        }
+
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* DIRECCIÓN */}
+
+                  <div className="modal-cliente-dato">
+
+                    <div className="modal-cliente-icono">
+
+                      <MapPin size={20} />
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Dirección
+                      </span>
+
+                      <strong>
+                        {obtenerDireccionCliente()}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* =======================================
+                    BOTÓN WHATSAPP
+                ======================================= */}
+
+                <div className="modal-cliente-acciones">
+
+                  <button
+                    type="button"
+                    className="modal-whatsapp-btn"
+                    onClick={
+                      abrirWhatsApp
+                    }
+                  >
+
+                    <Phone size={18} />
+
+                    Contactar por WhatsApp
+
+                  </button>
+
+                </div>
+
+
+                {/* =======================================
+                    INFORMACIÓN DEL PEDIDO
+                ======================================= */}
+
+                {obtenerPedidoId(
+                  conversacionSeleccionada
+                ) && (
+
+                  <div className="modal-pedido">
+
+
+                    <div className="modal-pedido-header">
+
+                      <div className="modal-pedido-icono">
+
+                        <ShoppingBag
+                          size={21}
+                        />
+
+                      </div>
+
+
+                      <div>
+
+                        <span>
+                          Pedido del cliente
+                        </span>
+
+                        <strong>
+                          {
+                            totalProductosPedido
+                          }{" "}
+                          {
+                            totalProductosPedido === 1
+                              ? "producto"
+                              : "productos"
+                          }
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* ===================================
+                        CARGANDO PEDIDO
+                    =================================== */}
+
+                    {cargandoPedido ? (
+
+                      <div className="modal-pedido-cargando">
+
+                        Cargando pedido...
+
+                      </div>
+
+                    ) : productosPedido.length > 0 ? (
+
+                      <div className="modal-pedido-productos">
+
+
+                        {productosPedido.map(
+                          (
+                            producto,
+                            index
+                          ) => {
+
+                            const cantidad =
+                              Number(
+                                producto.cantidad ||
+                                producto.qty ||
+                                1
+                              );
+
+
+                            const nombreProducto =
+                              producto.nombre ||
+                              producto.producto ||
+                              producto.titulo ||
+                              "Producto";
+
+
+                            const presentacion =
+                              producto.presentacion ||
+                              producto.peso ||
+                              producto.tamano ||
+                              producto.tamaño ||
+                              producto.gramos ||
+                              "";
+
+
+                            return (
+
+                              <div
+                                className="modal-pedido-producto"
+                                key={
+                                  producto.id ||
+                                  producto.productoId ||
+                                  `${nombreProducto}-${index}`
+                                }
+                              >
+
+                                <div className="modal-pedido-producto-info">
+
+                                  <strong>
+                                    {nombreProducto}
+                                  </strong>
+
+
+                                  {presentacion && (
+
+                                    <span>
+                                      {presentacion}
+                                    </span>
+
+                                  )}
+
+                                </div>
+
+
+                                <div className="modal-pedido-cantidad">
+
+                                  {cantidad} ×
+
+                                </div>
+
+                              </div>
+
+                            );
+
+                          }
+                        )}
+
+                      </div>
+
+                    ) : (
+
+                      <div className="modal-pedido-vacio">
+
+                        No fue posible obtener
+                        los productos del pedido.
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                )}
+
+
+                {/* =======================================
+                    NOTA
+                ======================================= */}
+
+                <div className="modal-cliente-nota">
+
+                  <Info size={18} />
+
+                  <p>
+                    Estos datos corresponden al perfil
+                    registrado por el cliente en
+                    Café de Origen.
+                  </p>
+
+                </div>
+
+              </>
+
+            )}
 
           </div>
 
@@ -2407,5 +2515,9 @@ function AdminConsultas() {
 
 }
 
+
+// =====================================================
+// EXPORTAR COMPONENTE
+// =====================================================
 
 export default AdminConsultas;
