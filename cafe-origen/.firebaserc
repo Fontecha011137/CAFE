@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "pory-2b6f5"
+  },
+  "targets": {
+    "pory-2b6f5": {
+      "hosting": {
+        "cafe": [
+          "cafedelmirador"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

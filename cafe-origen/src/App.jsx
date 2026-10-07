@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import Layout from "./components/Layout";
+import RutaProtegida from "./components/RutaProtegida";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -29,7 +30,7 @@ function App() {
 
 
         {/* =========================================
-            PÚBLICO / CLIENTE
+            PÚBLICO
         ========================================= */}
 
         <Route
@@ -50,11 +51,10 @@ function App() {
         />
 
 
-        <Route
-          path="/perfil"
-          element={<Perfil />}
-        />
-
+        {/* =========================================
+            CARRITO
+            SE MANTIENE PÚBLICO POR AHORA
+        ========================================= */}
 
         <Route
           path="/carrito"
@@ -62,9 +62,27 @@ function App() {
         />
 
 
+        {/* =========================================
+            CLIENTE AUTENTICADO
+        ========================================= */}
+
+        <Route
+          path="/perfil"
+          element={
+            <RutaProtegida>
+              <Perfil />
+            </RutaProtegida>
+          }
+        />
+
+
         <Route
           path="/consultas"
-          element={<Consultas />}
+          element={
+            <RutaProtegida>
+              <Consultas />
+            </RutaProtegida>
+          }
         />
 
 
@@ -74,25 +92,41 @@ function App() {
 
         <Route
           path="/admin"
-          element={<Admin />}
+          element={
+            <RutaProtegida soloAdmin>
+              <Admin />
+            </RutaProtegida>
+          }
         />
 
 
         <Route
           path="/admin/consultas"
-          element={<AdminConsultas />}
+          element={
+            <RutaProtegida soloAdmin>
+              <AdminConsultas />
+            </RutaProtegida>
+          }
         />
 
 
         <Route
           path="/admin/pedidos"
-          element={<AdminPedidos />}
+          element={
+            <RutaProtegida soloAdmin>
+              <AdminPedidos />
+            </RutaProtegida>
+          }
         />
 
 
         <Route
           path="/admin/clientes"
-          element={<AdminClientes />}
+          element={
+            <RutaProtegida soloAdmin>
+              <AdminClientes />
+            </RutaProtegida>
+          }
         />
 
 

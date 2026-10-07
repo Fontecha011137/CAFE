@@ -158,27 +158,34 @@ function Navbar() {
   // =====================================================
   // CERRAR SESIÓN
   // =====================================================
+const cerrarSesion = async () => {
+  try {
+    console.log(
+      "ANTES DE CERRAR:",
+      auth.currentUser
+    );
 
-  const cerrarSesion = async () => {
+    await signOut(auth);
 
-    try {
+    console.log(
+      "DESPUÉS DE CERRAR:",
+      auth.currentUser
+    );
 
-      await signOut(auth);
+    setUsuario(null);
+    setRol(null);
+    setCargandoSesion(false);
+    setMenuAbierto(false);
 
-      setMenuAbierto(false);
+    navigate("/", { replace: true });
 
-      navigate("/");
-
-    } catch (error) {
-
-      console.error(
-        "Error cerrando sesión:",
-        error
-      );
-
-    }
-
-  };
+  } catch (error) {
+    console.error(
+      "Error cerrando sesión:",
+      error
+    );
+  }
+};
 
 
   return (
