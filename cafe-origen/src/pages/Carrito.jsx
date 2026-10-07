@@ -1,290 +1,466 @@
 import {
 
-
-
-  useEffect,
-
-
-
-  useState
-
-
-
+  useEffect,
+  useState
 } from "react";
 
-
-
-
-
-
-
 import {
-
-
-
-  Link
-
-
-
+  Link
 } from "react-router-dom";
 
 
-
-
-
-
-
 import {
-
-
-
-  onAuthStateChanged
-
-
-
+  onAuthStateChanged
 } from "firebase/auth";
 
-
-
-
-
-
-
 import {
-
-
-
-  addDoc,
-
-
-
-  collection,
-
-
-
-  doc,
-
-
-
-  getDoc,
-
-
-
-  serverTimestamp
-
-
-
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp
 } from "firebase/firestore";
 
-
-
-
-
-
-
 import {
-
-
-
-  auth,
-
-
-
-  db
-
-
-
+  auth,
+  db
 } from "../firebaseConfig";
-
-
-
-
-
-
 
 import "../css/carrito.css";
 
 
-
-
-
-
-
-
-
-
-
 function Carrito() {
+  // =====================================================
+  // CARRITO
+  // =====================================================
+
+  const [
+    carrito,
+    setCarrito
+  ] = useState(() => {
+
+    const guardado =
+      localStorage.getItem(
+        "carritoCafe"
+      );
+
+    return guardado
+
+      ? JSON.parse(guardado)
+      : [];
+  });
+  // =====================================================
+  // USUARIO
+  // =====================================================
+  const [
+    usuario,
+    setUsuario
+  ] = useState(null);
+
+  const [
+    perfil,
+    setPerfil
+  ] = useState(null);
+
+  const [
+    cargandoUsuario,
+    setCargandoUsuario
+  ] = useState(true);
+
+  // =====================================================
+  // MODAL LOGIN / REGISTRO
+  // =====================================================
+
+  const [
+    mostrarModalLogin,
+    setMostrarModalLogin
+  ] = useState(false);
+
+  // =====================================================
+  // MODAL ENVÍO
+  // =====================================================
+
+  const [
+    mostrarModalEnvio,
+    setMostrarModalEnvio
+  ] = useState(false);
+
+  const [
+    modoEnvio,
+    setModoEnvio
+  ] = useState(null);
+
+  const [
+    comentarioEnvio,
+    setComentarioEnvio
+  ] = useState("");
+
+  const [
+    mensajeModal,
+    setMensajeModal
+  ] = useState("");
+
+  const [
+    enviandoPedido,
+    setEnviandoPedido
+  ] = useState(false);
+
+  // =====================================================
+  // DATOS DEL VISITANTE
+  // =====================================================
+
+  const [
+    nombreVisitante,
+    setNombreVisitante
+  ] = useState("");
+
+  const [
+    celularVisitante,
+    setCelularVisitante
+  ] = useState("");
+
+  // =====================================================
+  // ALMACENAMIENTO SEGURO DEL CARRITO
+  // =====================================================
+
+  const CLAVE_CARRITO_TEMPORAL = "carritoCafe";
+
+  const obtenerClaveCarritoUsuario = (uid) =>
+    `carritoCafe_${uid}`;
 
+  const leerCarritoLocal = (clave) => {
+    try {
+      const guardado = localStorage.getItem(clave);
+      const productos = guardado ? JSON.parse(guardado) : [];
+      return Array.isArray(productos) ? productos : [];
+    } catch (error) {
+      console.error(`Error leyendo ${clave}:`, error);
+      return [];
+    }
+  };
 
+  const fusionarCarritos = (carritoPrivado, carritoTemporal) => {
+    const mapa = new Map();
+    [...carritoPrivado, ...carritoTemporal].forEach((producto) => {
+      const claveProducto = String(producto.id);
+      const existente = mapa.get(claveProducto);
 
+      if (existente) {
+        mapa.set(claveProducto, {
+          ...existente,
+          ...producto,
+          cantidad:
+            Number(existente.cantidad || 0) +
+            Number(producto.cantidad || 0)
+        });
+      } else {
+        mapa.set(claveProducto, {
+          ...producto,
+          cantidad: Number(producto.cantidad || 1)
+        });
+      }
+    });
+    return Array.from(mapa.values());
+  };
+  // Guardar siempre en la clave que corresponde a la sesión actual.
+  // Mientras Firebase determina la sesión no escribimos nada, para no
+  // sobrescribir accidentalmente un carrito existente.
 
+  useEffect(() => {
 
+    if (cargandoUsuario) return;
+    if (usuario && !usuario.isAnonymous) {
+      localStorage.setItem(
+            obtenerClaveCarritoUsuario(usuario.uid),
+        JSON.stringify(carrito)
+      );
+      return;
+    }
 
+    localStorage.setItem(
+      CLAVE_CARRITO_TEMPORAL,
+      JSON.stringify(carrito)
+    );
+  }, [carrito, usuario, cargandoUsuario]);
 
-  // =====================================================
+  // =====================================================
+  // DETECTAR USUARIO Y CARGAR SU CARRITO PRIVADO
+  // =====================================================
 
+  useEffect(() => {
 
+    const unsubscribe = onAuthStateChanged(
 
-  // CARRITO
+      auth,
 
+      async (firebaseUser) => {
 
+        if (!firebaseUser) {
 
-  // =====================================================
+          const carritoTemporal = leerCarritoLocal(
 
+            CLAVE_CARRITO_TEMPORAL
 
+          );
 
 
 
+          setUsuario(null);
 
+          setPerfil(null);
 
-  const [
+          setCarrito(carritoTemporal);
 
+          setMostrarModalLogin(true);
 
+          setCargandoUsuario(false);
 
-    carrito,
+          return;
 
+        }
 
 
-    setCarrito
 
+        if (firebaseUser.isAnonymous) {
 
+          const carritoTemporal = leerCarritoLocal(
 
-  ] = useState(() => {
+            CLAVE_CARRITO_TEMPORAL
 
+          );
 
 
 
+          setUsuario(firebaseUser);
 
+          setPerfil(null);
 
+          setCarrito(carritoTemporal);
 
-    const guardado =
+          setMostrarModalLogin(true);
 
+          setCargandoUsuario(false);
 
+          return;
 
-      localStorage.getItem(
+        }
 
 
 
-        "carritoCafe"
+        const clavePrivada = obtenerClaveCarritoUsuario(
 
+          firebaseUser.uid
 
+        );
 
-      );
+        const carritoPrivado = leerCarritoLocal(clavePrivada);
 
+        const carritoTemporal = leerCarritoLocal(
 
+          CLAVE_CARRITO_TEMPORAL
 
+        );
 
+        const carritoMigrado = fusionarCarritos(
 
+          carritoPrivado,
 
+          carritoTemporal
 
-    return guardado
+        );
 
 
 
-      ? JSON.parse(guardado)
+        // Guardamos primero el carrito privado y solo después eliminamos
 
+        // el temporal. Así no se pierde el pedido si el cliente armó el
 
+        // carrito antes de iniciar sesión.
 
-      : [];
+        localStorage.setItem(
 
+          clavePrivada,
 
+          JSON.stringify(carritoMigrado)
 
+        );
 
+        localStorage.removeItem(CLAVE_CARRITO_TEMPORAL);
 
 
 
-  });
+        setUsuario(firebaseUser);
 
+        setCarrito(carritoMigrado);
 
+        setMostrarModalLogin(false);
 
 
 
+        try {
 
+          const usuarioRef = doc(
 
+            db,
 
+            "usuarios",
 
+            firebaseUser.uid
 
+          );
 
-  // =====================================================
 
 
+          const usuarioSnap = await getDoc(usuarioRef);
 
-  // USUARIO
 
 
+          if (usuarioSnap.exists()) {
 
-  // =====================================================
+            setPerfil({
 
+              uid: firebaseUser.uid,
 
+              ...usuarioSnap.data()
 
+            });
 
+          } else {
 
+            setPerfil({
 
+              uid: firebaseUser.uid,
 
-  const [
+              nombre: firebaseUser.displayName || "",
 
+              email: firebaseUser.email || ""
 
+            });
 
-    usuario,
+          }
 
+        } catch (error) {
 
+          console.error("Error cargando perfil:", error);
 
-    setUsuario
 
 
+          setPerfil({
 
-  ] = useState(null);
+            uid: firebaseUser.uid,
 
+            nombre: firebaseUser.displayName || "",
 
+            email: firebaseUser.email || ""
 
+          });
 
+        } finally {
 
+          setCargandoUsuario(false);
 
+        }
 
+      }
 
+    );
 
 
 
-  const [
+    return () => {
 
+      unsubscribe();
 
+    };
 
-    perfil,
+  }, []);
 
+  // =====================================================
+  // CANTIDADES
+  // =====================================================
 
+  const aumentarCantidad = (id) => {
 
-    setPerfil
+    const nuevoCarrito =
+      carrito.map(
+        (producto) =>
+          producto.id === id
+            ? {
+                ...producto,
+                cantidad:
+                  producto.cantidad + 1
+              }
+            : producto
+      );
 
+    setCarrito(
+      nuevoCarrito
+    );
+  };
 
+  const disminuirCantidad = (id) => {
+    const nuevoCarrito =
+      carrito
+        .map(
+          (producto) =>
+            producto.id === id
+              ? {
+                  ...producto,
+                  cantidad:
+                    producto.cantidad - 1
+                }
+              : producto
+        )
 
-  ] = useState(null);
+        .filter(
+          (producto) =>
+            producto.cantidad > 0
+        );
 
 
+setCarrito(
+     nuevoCarrito
+    );
+ };
 
 
+  const eliminarProducto = (id) => {
 
+    const nuevoCarrito =
+      carrito.filter(
+        (producto) =>
+          producto.id !== id
+    );
 
+ setCarrito(
+     nuevoCarrito
+   );
+ };
 
 
+ const vaciarCarrito = () => {
+  setCarrito([]);
+ };
+ // =====================================================
+  // TOTALES
+  // =====================================================
+  const total =
 
 
 
-  const [
 
 
 
-    cargandoUsuario,
 
+    carrito.reduce(
 
 
-    setCargandoUsuario
 
 
 
-  ] = useState(true);
 
 
+      (
 
 
 
@@ -292,61 +468,63 @@ function Carrito() {
 
 
 
+        acumulado,
 
 
-  // =====================================================
 
-  // MODAL LOGIN / REGISTRO
 
-  // =====================================================
 
 
 
-  const [
+        producto
 
-    mostrarModalLogin,
 
-    setMostrarModalLogin
 
-  ] = useState(false);
 
 
 
 
+      ) =>
 
-  // =====================================================
+        acumulado +
 
+        Number(
 
+          producto.precio        ) *
 
-  // MODAL ENVÍO
+        Number(
+          producto.cantidad
 
+        ),
+      0
+    );
 
+  const totalProductos =
+    carrito.reduce(
 
-  // =====================================================
 
 
 
 
 
 
+      (
 
-  const [
 
 
 
-    mostrarModalEnvio,
 
 
 
-    setMostrarModalEnvio
+        acumulado,
 
 
 
-  ] = useState(false);
 
 
 
 
+        producto
 
 
 
@@ -354,67 +532,62 @@ function Carrito() {
 
 
 
-  const [
+      ) =>
 
 
 
-    modoEnvio,
 
 
 
-    setModoEnvio
 
+        acumulado +
 
 
-  ] = useState(null);
 
 
 
 
 
+        Number(
 
 
 
 
 
 
-  const [
 
+          producto.cantidad
 
 
-    comentarioEnvio,
 
 
 
-    setComentarioEnvio
 
 
+        ),
 
-  ] = useState("");
 
 
 
 
 
 
+      0
 
 
 
 
 
-  const [
 
 
+    );
 
-    mensajeModal,
 
 
 
-    setMensajeModal
 
 
 
-  ] = useState("");
 
 
 
@@ -426,22 +599,20 @@ function Carrito() {
 
 
 
-  const [
 
 
 
-    enviandoPedido,
 
 
+  // =====================================================
 
-    setEnviandoPedido
 
 
 
-  ] = useState(false);
 
 
 
+  // PRECIO
 
 
 
@@ -449,16 +620,14 @@ function Carrito() {
 
 
 
+  // =====================================================
 
-  // =====================================================
 
 
 
-  // DATOS DEL VISITANTE
 
 
 
-  // =====================================================
 
 
 
@@ -466,19 +635,17 @@ function Carrito() {
 
 
 
-  const [
 
+  const formatoPrecio =
 
 
-    nombreVisitante,
 
 
 
-    setNombreVisitante
 
 
+    (valor) => {
 
-  ] = useState("");
 
 
 
@@ -490,20 +657,18 @@ function Carrito() {
 
 
 
-  const [
 
 
 
-    celularVisitante,
+      return new Intl.NumberFormat(
 
 
 
-    setCelularVisitante
 
 
 
-  ] = useState("");
 
+        "es-CO",
 
 
 
@@ -511,188 +676,50 @@ function Carrito() {
 
 
 
+        {
 
 
 
-  // =====================================================
 
-  // ALMACENAMIENTO SEGURO DEL CARRITO
 
-  // =====================================================
 
-  const CLAVE_CARRITO_TEMPORAL = "carritoCafe";
 
-  const obtenerClaveCarritoUsuario = (uid) =>
-    `carritoCafe_${uid}`;
+          style: "currency",
 
-  const leerCarritoLocal = (clave) => {
-    try {
-      const guardado = localStorage.getItem(clave);
-      const productos = guardado ? JSON.parse(guardado) : [];
-      return Array.isArray(productos) ? productos : [];
-    } catch (error) {
-      console.error(`Error leyendo ${clave}:`, error);
-      return [];
-    }
-  };
 
-  const fusionarCarritos = (carritoPrivado, carritoTemporal) => {
-    const mapa = new Map();
 
-    [...carritoPrivado, ...carritoTemporal].forEach((producto) => {
-      const claveProducto = String(producto.id);
-      const existente = mapa.get(claveProducto);
 
-      if (existente) {
-        mapa.set(claveProducto, {
-          ...existente,
-          ...producto,
-          cantidad:
-            Number(existente.cantidad || 0) +
-            Number(producto.cantidad || 0)
-        });
-      } else {
-        mapa.set(claveProducto, {
-          ...producto,
-          cantidad: Number(producto.cantidad || 1)
-        });
-      }
-    });
 
-    return Array.from(mapa.values());
-  };
 
-  // Guardar siempre en la clave que corresponde a la sesión actual.
-  // Mientras Firebase determina la sesión no escribimos nada, para no
-  // sobrescribir accidentalmente un carrito existente.
-  useEffect(() => {
-    if (cargandoUsuario) return;
 
-    if (usuario && !usuario.isAnonymous) {
-      localStorage.setItem(
-        obtenerClaveCarritoUsuario(usuario.uid),
-        JSON.stringify(carrito)
-      );
-      return;
-    }
+          currency: "COP",
 
-    localStorage.setItem(
-      CLAVE_CARRITO_TEMPORAL,
-      JSON.stringify(carrito)
-    );
-  }, [carrito, usuario, cargandoUsuario]);
 
-  // =====================================================
 
-  // DETECTAR USUARIO Y CARGAR SU CARRITO PRIVADO
 
-  // =====================================================
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (firebaseUser) => {
-        if (!firebaseUser) {
-          const carritoTemporal = leerCarritoLocal(
-            CLAVE_CARRITO_TEMPORAL
-          );
 
-          setUsuario(null);
-          setPerfil(null);
-          setCarrito(carritoTemporal);
-          setMostrarModalLogin(true);
-          setCargandoUsuario(false);
-          return;
-        }
 
-        if (firebaseUser.isAnonymous) {
-          const carritoTemporal = leerCarritoLocal(
-            CLAVE_CARRITO_TEMPORAL
-          );
+          maximumFractionDigits: 0
 
-          setUsuario(firebaseUser);
-          setPerfil(null);
-          setCarrito(carritoTemporal);
-          setMostrarModalLogin(true);
-          setCargandoUsuario(false);
-          return;
-        }
 
-        const clavePrivada = obtenerClaveCarritoUsuario(
-          firebaseUser.uid
-        );
-        const carritoPrivado = leerCarritoLocal(clavePrivada);
-        const carritoTemporal = leerCarritoLocal(
-          CLAVE_CARRITO_TEMPORAL
-        );
-        const carritoMigrado = fusionarCarritos(
-          carritoPrivado,
-          carritoTemporal
-        );
 
-        // Guardamos primero el carrito privado y solo después eliminamos
-        // el temporal. Así no se pierde el pedido si el cliente armó el
-        // carrito antes de iniciar sesión.
-        localStorage.setItem(
-          clavePrivada,
-          JSON.stringify(carritoMigrado)
-        );
-        localStorage.removeItem(CLAVE_CARRITO_TEMPORAL);
 
-        setUsuario(firebaseUser);
-        setCarrito(carritoMigrado);
-        setMostrarModalLogin(false);
 
-        try {
-          const usuarioRef = doc(
-            db,
-            "usuarios",
-            firebaseUser.uid
-          );
 
-          const usuarioSnap = await getDoc(usuarioRef);
 
-          if (usuarioSnap.exists()) {
-            setPerfil({
-              uid: firebaseUser.uid,
-              ...usuarioSnap.data()
-            });
-          } else {
-            setPerfil({
-              uid: firebaseUser.uid,
-              nombre: firebaseUser.displayName || "",
-              email: firebaseUser.email || ""
-            });
-          }
-        } catch (error) {
-          console.error("Error cargando perfil:", error);
+        }
 
-          setPerfil({
-            uid: firebaseUser.uid,
-            nombre: firebaseUser.displayName || "",
-            email: firebaseUser.email || ""
-          });
-        } finally {
-          setCargandoUsuario(false);
-        }
-      }
-    );
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
 
-  // =====================================================
 
 
 
-  // CANTIDADES
+      ).format(valor);
 
 
 
-  // =====================================================
 
 
 
@@ -700,191 +727,175 @@ function Carrito() {
 
 
 
-  const aumentarCantidad = (id) => {
 
 
 
 
 
+    };
 
 
-    const nuevoCarrito =
 
 
 
-      carrito.map(
 
 
 
-        (producto) =>
 
 
 
-          producto.id === id
 
 
 
-            ? {
 
 
 
-                ...producto,
 
 
 
-                cantidad:
 
 
 
-                  producto.cantidad + 1
+  // =====================================================
 
 
 
-              }
 
 
 
-            : producto
 
+  // ABRIR MODAL
 
 
-      );
 
 
 
 
 
+  // =====================================================
 
 
 
 
 
 
-    setCarrito(
 
 
 
-      nuevoCarrito
 
 
 
-    );
 
 
 
+    const abrirModalEnvio = () => {
 
 
 
 
-  };
 
 
 
+    if (
 
 
 
+      !usuario ||
 
 
 
+      usuario.isAnonymous
 
 
-  const disminuirCantidad = (id) => {
 
+    ) {
 
 
 
 
 
 
-    const nuevoCarrito =
 
+      setMostrarModalLogin(true);
 
 
-      carrito
 
 
 
-        .map(
 
 
+      return;
 
-          (producto) =>
 
 
+    }
 
-            producto.id === id
 
 
 
-              ? {
 
 
 
-                  ...producto,
 
 
 
-                  cantidad:
 
+    setMostrarModalEnvio(true);
 
 
-                    producto.cantidad - 1
 
+    setModoEnvio(null);
 
 
-                }
 
+    setComentarioEnvio("");
 
 
-              : producto
 
+    setMensajeModal("");
 
 
-        )
 
 
 
-        .filter(
 
 
 
-          (producto) =>
 
 
 
-            producto.cantidad > 0
+    if (perfil) {
 
 
 
-        );
 
 
 
 
+      setNombreVisitante("");
 
 
 
+      setCelularVisitante("");
 
 
 
 
-    setCarrito(
 
 
 
-      nuevoCarrito
+    }
 
 
 
-    );
 
 
 
 
+  };
 
 
 
-  };
 
 
 
@@ -893,34 +904,31 @@ function Carrito() {
 
 
 
+  // =====================================================
 
 
 
-  const eliminarProducto = (id) => {
 
 
 
 
+  // CERRAR MODAL
 
 
 
-    const nuevoCarrito =
 
 
 
-      carrito.filter(
 
+  // =====================================================
 
 
-        (producto) =>
 
 
 
-          producto.id !== id
 
 
 
-      );
 
 
 
@@ -928,27 +936,25 @@ function Carrito() {
 
 
 
+  const cerrarModalEnvio = () => {
 
 
 
 
-    setCarrito(
 
 
 
-      nuevoCarrito
 
 
 
-    );
 
 
 
 
 
+    setMostrarModalEnvio(false);
 
 
-  };
 
 
 
@@ -960,15 +966,14 @@ function Carrito() {
 
 
 
-  const vaciarCarrito = () => {
 
 
+    setModoEnvio(null);
 
 
 
 
 
-    setCarrito([]);
 
 
 
@@ -976,10 +981,10 @@ function Carrito() {
 
 
 
-  };
 
 
 
+    setComentarioEnvio("");
 
 
 
@@ -988,83 +993,70 @@ function Carrito() {
 
 
 
-  // =====================================================
 
 
 
-  // TOTALES
 
 
 
-  // =====================================================
 
+    setMensajeModal("");
 
 
 
 
 
 
-  const total =
 
 
 
-    carrito.reduce(
 
 
 
-      (
 
 
 
-        acumulado,
+  };
 
 
 
-        producto
 
 
 
-      ) =>
 
 
 
-        acumulado +
 
 
 
-        Number(
 
 
 
-          producto.precio
 
 
 
-        ) \*
 
 
 
-        Number(
 
 
+  // =====================================================
 
-          producto.cantidad
 
 
 
-        ),
 
 
 
-      0
+  // OPCIONES DE ENTREGA
 
 
 
-    );
 
 
 
 
+  // =====================================================
 
 
 
@@ -1072,83 +1064,70 @@ function Carrito() {
 
 
 
-  const totalProductos =
 
 
 
-    carrito.reduce(
 
 
 
-      (
 
 
+  const seleccionarAcordarEnvio = () => {
 
-        acumulado,
 
 
 
-        producto
 
 
 
-      ) =>
 
 
 
-        acumulado +
 
 
 
-        Number(
 
 
+    setModoEnvio("acordar");
 
-          producto.cantidad
 
 
 
-        ),
 
 
 
-      0
 
 
 
-    );
 
 
 
 
 
+    setMensajeModal("");
 
 
 
 
 
 
-  // =====================================================
 
 
 
-  // PRECIO
 
 
 
-  // =====================================================
 
 
 
+  };
 
 
 
 
-  const formatoPrecio =
 
 
 
-    (valor) => {
 
 
 
@@ -1156,43 +1135,36 @@ function Carrito() {
 
 
 
-      return new Intl.NumberFormat(
 
 
 
-        "es-CO",
 
 
 
-        {
 
 
 
-          style: "currency",
+  const seleccionarPickup = () => {
 
 
 
-          currency: "COP",
 
 
 
-          maximumFractionDigits: 0
 
 
 
-        }
 
 
 
-      ).format(valor);
 
 
 
+    setModoEnvio("pickup");
 
 
 
 
-    };
 
 
 
@@ -1204,15 +1176,13 @@ function Carrito() {
 
 
 
-  // =====================================================
+    setMensajeModal("");
 
 
 
-  // ABRIR MODAL
 
 
 
-  // =====================================================
 
 
 
@@ -1220,73 +1190,57 @@ function Carrito() {
 
 
 
-    const abrirModalEnvio = () => {
 
 
+  };
 
-    if (
 
-      !usuario ||
 
-      usuario.isAnonymous
 
-    ) {
 
 
 
-      setMostrarModalLogin(true);
 
 
 
-      return;
 
-    }
 
 
 
 
 
-    setMostrarModalEnvio(true);
 
-    setModoEnvio(null);
 
-    setComentarioEnvio("");
 
-    setMensajeModal("");
 
 
 
 
+  // =====================================================
 
-    if (perfil) {
 
 
 
-      setNombreVisitante("");
 
-      setCelularVisitante("");
 
 
+  // OBTENER DATOS DEL CLIENTE
 
-    }
 
 
 
-  };
 
 
 
+  // =====================================================
 
 
-  // =====================================================
 
 
 
-  // CERRAR MODAL
 
 
 
-  // =====================================================
 
 
 
@@ -1294,7 +1248,7 @@ function Carrito() {
 
 
 
-  const cerrarModalEnvio = () => {
+  const obtenerDatosCliente = () => {
 
 
 
@@ -1302,7 +1256,6 @@ function Carrito() {
 
 
 
-    setMostrarModalEnvio(false);
 
 
 
@@ -1310,32 +1263,32 @@ function Carrito() {
 
 
 
-    setModoEnvio(null);
 
+    if (
 
 
 
 
 
 
-    setComentarioEnvio("");
 
+      usuario &&
 
 
 
 
 
 
-    setMensajeModal("");
 
+      !usuario.isAnonymous &&
 
 
 
 
 
 
-  };
 
+      perfil
 
 
 
@@ -1343,34 +1296,32 @@ function Carrito() {
 
 
 
+    ) {
 
 
 
-  // =====================================================
 
 
 
-  // OPCIONES DE ENTREGA
 
 
 
-  // =====================================================
 
 
 
 
 
 
+      return {
 
-  const seleccionarAcordarEnvio = () => {
 
 
 
 
 
 
+        origen: "registrado",
 
-    setModoEnvio("acordar");
 
 
 
@@ -1378,7 +1329,6 @@ function Carrito() {
 
 
 
-    setMensajeModal("");
 
 
 
@@ -1386,7 +1336,7 @@ function Carrito() {
 
 
 
-  };
+        uidCliente:
 
 
 
@@ -1394,11 +1344,11 @@ function Carrito() {
 
 
 
+          usuario.uid,
 
 
 
 
-  const seleccionarPickup = () => {
 
 
 
@@ -1406,23 +1356,22 @@ function Carrito() {
 
 
 
-    setModoEnvio("pickup");
 
 
 
 
+        nombreCliente:
 
 
 
-    setMensajeModal("");
 
 
 
 
+          perfil.nombre || "",
 
 
 
-  };
 
 
 
@@ -1434,23 +1383,21 @@ function Carrito() {
 
 
 
-  // =====================================================
 
+        celularCliente:
 
 
-  // OBTENER DATOS DEL CLIENTE
 
 
 
-  // =====================================================
 
 
+          perfil.celular || "",
 
 
 
 
 
-  const obtenerDatosCliente = () => {
 
 
 
@@ -1458,47 +1405,43 @@ function Carrito() {
 
 
 
-    if (
 
 
 
-      usuario &&
+        emailCliente:
 
 
 
-      !usuario.isAnonymous &&
 
 
 
-      perfil
 
+          perfil.email ||
 
 
-    ) {
 
 
 
 
 
+          usuario.email ||
 
 
-      return {
 
 
 
-        origen: "registrado",
 
 
+          ""
 
 
 
 
 
-        uidCliente:
 
 
+      };
 
-          usuario.uid,
 
 
 
@@ -1506,23 +1449,20 @@ function Carrito() {
 
 
 
-        nombreCliente:
 
 
 
-          perfil.nombre || "",
 
 
 
 
+    }
 
 
 
-        celularCliente:
 
 
 
-          perfil.celular || "",
 
 
 
@@ -1530,31 +1470,27 @@ function Carrito() {
 
 
 
-        emailCliente:
 
 
 
-          perfil.email ||
 
 
 
-          usuario.email ||
 
 
 
-          ""
 
+    return {
 
 
-      };
 
 
 
 
 
+      origen: "visitante",
 
 
-    }
 
 
 
@@ -1566,23 +1502,21 @@ function Carrito() {
 
 
 
-    return {
 
 
+      uidCliente:
 
-      origen: "visitante",
 
 
 
 
 
 
+        usuario?.uid || null,
 
-      uidCliente:
 
 
 
-        usuario?.uid || null,
 
 
 
@@ -1590,23 +1524,21 @@ function Carrito() {
 
 
 
-      nombreCliente:
 
 
 
-        nombreVisitante.trim(),
 
+      nombreCliente:
 
 
 
 
 
 
-      celularCliente:
 
+        nombreVisitante.trim(),
 
 
-        celularVisitante.trim(),
 
 
 
@@ -1614,22 +1546,21 @@ function Carrito() {
 
 
 
-      emailCliente: ""
 
 
 
-    };
 
 
 
+      celularCliente:
 
 
 
 
-  };
 
 
 
+        celularVisitante.trim(),
 
 
 
@@ -1638,31 +1569,28 @@ function Carrito() {
 
 
 
-  // =====================================================
 
 
 
-  // VALIDAR DATOS
 
 
 
-  // =====================================================
 
+      emailCliente: ""
 
 
 
 
 
 
-  const validarDatosCliente = () => {
 
+    };
 
 
 
 
 
 
-    // Cliente registrado
 
 
 
@@ -1670,23 +1598,19 @@ function Carrito() {
 
 
 
-    if (
 
 
+  };
 
-      usuario &&
 
 
 
-      !usuario.isAnonymous &&
 
 
 
-      perfil
 
 
 
-    ) {
 
 
 
@@ -1694,23 +1618,21 @@ function Carrito() {
 
 
 
-      if (!perfil.nombre) {
 
 
 
 
 
 
+  // =====================================================
 
-        setMensajeModal(
 
 
 
-          "Tu perfil no tiene nombre registrado."
 
 
 
-        );
+  // VALIDAR DATOS
 
 
 
@@ -1718,7 +1640,7 @@ function Carrito() {
 
 
 
-        return false;
+  // =====================================================
 
 
 
@@ -1726,7 +1648,6 @@ function Carrito() {
 
 
 
-      }
 
 
 
@@ -1735,46 +1656,39 @@ function Carrito() {
 
 
 
+  const validarDatosCliente = () => {
 
 
 
-      if (
 
 
 
-        !/^[0-9]{10}$/.test(
 
 
 
-          String(
 
 
 
-            perfil.celular || ""
 
 
 
-          ).replace(
+    // Cliente registrado
 
 
 
-            /\D/g,
 
 
 
-            ""
 
 
 
-          )
 
 
 
-        )
 
 
 
-      ) {
+    if (
 
 
 
@@ -1782,32 +1696,31 @@ function Carrito() {
 
 
 
-        setMensajeModal(
+      usuario &&
 
 
 
-          "Tu perfil no tiene un celular válido. Actualízalo desde Mi cuenta."
 
 
 
-        );
 
+      !usuario.isAnonymous &&
 
 
 
 
 
 
-        return false;
 
+      perfil
 
 
 
 
 
 
-      }
 
+    ) {
 
 
 
@@ -1818,15 +1731,14 @@ function Carrito() {
 
 
 
-      return true;
 
 
 
 
 
+      if (!perfil.nombre) {
 
 
-    }
 
 
 
@@ -1838,31 +1750,28 @@ function Carrito() {
 
 
 
-    // Visitante
 
 
+        setMensajeModal(
 
 
 
 
 
-    if (
 
 
+          "Tu perfil no tiene nombre registrado."
 
-      nombreVisitante
 
 
 
-        .trim()
 
 
 
-        .length < 2
+        );
 
 
 
-    ) {
 
 
 
@@ -1870,15 +1779,13 @@ function Carrito() {
 
 
 
-      setMensajeModal(
 
 
 
-        "Ingresa tu nombre."
 
 
+        return false;
 
-      );
 
 
 
@@ -1886,7 +1793,6 @@ function Carrito() {
 
 
 
-      return false;
 
 
 
@@ -1894,7 +1800,7 @@ function Carrito() {
 
 
 
-    }
+      }
 
 
 
@@ -1906,31 +1812,27 @@ function Carrito() {
 
 
 
-    const celularLimpio =
 
 
 
-      celularVisitante
 
 
 
-        .replace(
 
 
 
-          /\D/g,
 
 
 
-          ""
+      if (
 
 
 
-        );
 
 
 
 
+        !/^[0-9]{10}$/.test(
 
 
 
@@ -1938,58 +1840,55 @@ function Carrito() {
 
 
 
-    if (
+          String(
 
 
 
-      !/^[0-9]{10}$/.test(
 
 
 
-        celularLimpio
 
+            perfil.celular || ""
 
 
-      )
 
 
 
-    ) {
 
 
+          ).replace(
 
 
 
 
 
-      setMensajeModal(
 
 
+            /\D/g,
 
-        "Ingresa un número de celular válido de 10 dígitos."
 
 
 
-      );
 
 
 
+            ""
 
 
 
 
-      return false;
 
 
 
+          )
 
 
 
 
-    }
 
 
 
+        )
 
 
 
@@ -1997,8 +1896,8 @@ function Carrito() {
 
 
 
+      ) {
 
-    return true;
 
 
 
@@ -2006,7 +1905,6 @@ function Carrito() {
 
 
 
-  };
 
 
 
@@ -2014,43 +1912,39 @@ function Carrito() {
 
 
 
+        setMensajeModal(
 
 
 
 
-  // =====================================================
 
 
 
-  // CREAR PEDIDO EN FIRESTORE
+          "Tu perfil no tiene un celular válido. Actualízalo desde Mi cuenta."
 
 
 
-  // =====================================================
 
 
 
 
+        );
 
 
 
-  const crearPedido =
 
 
 
-    async (
 
 
 
-      metodoEntrega,
 
 
 
-      comentario = ""
 
 
 
-    ) => {
+        return false;
 
 
 
@@ -2058,31 +1952,26 @@ function Carrito() {
 
 
 
-      if (
 
 
 
-        carrito.length === 0
 
 
 
-      ) {
 
 
+      }
 
 
 
 
 
-        setMensajeModal(
 
 
 
-          "El carrito está vacío."
 
 
 
-        );
 
 
 
@@ -2090,15 +1979,14 @@ function Carrito() {
 
 
 
-        return;
 
 
 
 
 
+      return true;
 
 
-      }
 
 
 
@@ -2110,15 +1998,13 @@ function Carrito() {
 
 
 
-      if (
 
 
+    }
 
-        !validarDatosCliente()
 
 
 
-      ) {
 
 
 
@@ -2126,7 +2012,6 @@ function Carrito() {
 
 
 
-        return;
 
 
 
@@ -2134,19 +2019,18 @@ function Carrito() {
 
 
 
-      }
 
 
 
 
 
+    // Visitante
 
 
 
 
 
 
-      try {
 
 
 
@@ -2154,47 +2038,45 @@ function Carrito() {
 
 
 
-        setEnviandoPedido(true);
 
 
+    if (
 
-        setMensajeModal("");
 
 
 
 
 
 
+      nombreVisitante
 
 
 
 
 
-        const datosCliente =
 
 
+        .trim()
 
-          obtenerDatosCliente();
 
 
 
 
 
 
+        .length < 2
 
 
 
 
 
-        // ===============================================
 
 
+    ) {
 
-        // GUARDAR PEDIDO
 
 
 
-        // ===============================================
 
 
 
@@ -2202,35 +2084,30 @@ function Carrito() {
 
 
 
-        const pedidoRef =
 
 
 
-          await addDoc(
 
+      setMensajeModal(
 
 
-            collection(
 
 
 
-              db,
 
 
+        "Ingresa tu nombre."
 
-              "pedidos"
 
 
 
-            ),
 
 
 
-            {
+      );
 
 
 
-              ...datosCliente,
 
 
 
@@ -2238,23 +2115,19 @@ function Carrito() {
 
 
 
-              productos:
 
 
 
-                carrito.map(
 
 
+      return false;
 
-                  (producto) => ({
 
 
 
-                    id:
 
 
 
-                      producto.id,
 
 
 
@@ -2262,11 +2135,10 @@ function Carrito() {
 
 
 
-                    nombre:
 
+    }
 
 
-                      producto.nombre,
 
 
 
@@ -2274,107 +2146,93 @@ function Carrito() {
 
 
 
-                    precio:
 
 
 
-                      Number(
 
 
 
-                        producto.precio
 
 
 
-                      ),
 
 
 
 
 
+    const celularLimpio =
 
 
-                    cantidad:
 
 
 
-                      Number(
 
 
+      celularVisitante
 
-                        producto.cantidad
 
 
 
-                      ),
 
 
 
+        .replace(
 
 
 
 
-                    peso:
 
 
 
-                      producto.peso ||
+          /\D/g,
 
 
 
-                      "500 g",
 
 
 
 
+          ""
 
 
 
-                    subtotal:
 
 
 
-                      Number(
 
+        );
 
 
-                        producto.precio
 
 
 
-                      ) \*
 
 
 
-                      Number(
 
 
 
-                        producto.cantidad
 
 
 
-                      )
 
 
 
-                  })
 
 
 
-                ),
 
 
 
+    if (
 
 
 
 
-              cantidadProductos:
 
 
 
-                totalProductos,
+      !/^[0-9]{10}$/.test(
 
 
 
@@ -2382,79 +2240,72 @@ function Carrito() {
 
 
 
-              subtotal:
+        celularLimpio
 
 
 
-                total,
 
 
 
 
+      )
 
 
 
-              total:
 
 
 
-                total,
 
+    ) {
 
 
 
 
 
 
-              costoEnvio:
 
 
 
-                0,
 
 
 
 
 
 
+      setMensajeModal(
 
-              metodoEntrega,
 
 
 
 
 
 
+        "Ingresa un número de celular válido de 10 dígitos."
 
-              comentarioEntrega:
 
 
 
-                comentario,
 
 
 
+      );
 
 
 
 
-              estado:
 
 
 
-                metodoEntrega ===
 
 
 
-                "pickup"
 
 
 
-                  ? "Pendiente"
 
 
+      return false;
 
-                  : "Pendiente de acordar envío",
 
 
 
@@ -2462,31 +2313,26 @@ function Carrito() {
 
 
 
-              creado:
 
 
 
-                serverTimestamp(),
 
 
 
 
+    }
 
 
 
-              actualizado:
 
 
 
-                serverTimestamp()
 
 
 
-            }
 
 
 
-          );
 
 
 
@@ -2498,15 +2344,13 @@ function Carrito() {
 
 
 
-        // ===============================================
+    return true;
 
 
 
-        // CREAR CONVERSACIÓN SI ES ENVÍO
 
 
 
-        // ===============================================
 
 
 
@@ -2514,19 +2358,16 @@ function Carrito() {
 
 
 
-        if (
 
 
+  };
 
-          metodoEntrega ===
 
 
 
-          "acordar_envio"
 
 
 
-        ) {
 
 
 
@@ -2534,18 +2375,16 @@ function Carrito() {
 
 
 
-          const textoInicial =
 
 
 
-            comentario ||
 
 
 
-            "Quiero acordar el medio y costo del envío.";
 
 
 
+  // =====================================================
 
 
 
@@ -2553,76 +2392,68 @@ function Carrito() {
 
 
 
+  // CREAR PEDIDO EN FIRESTORE
 
-          const conversacionRef =
 
 
 
-            await addDoc(
 
 
 
-              collection(
+  // =====================================================
 
 
 
-                db,
 
 
 
-                "conversaciones"
 
 
 
-              ),
 
 
 
-              {
 
 
 
-                tipo:
+  const crearPedido =
 
 
 
-                  "envio",
 
 
 
 
+    async (
 
 
 
-                origen:
 
 
 
-                  datosCliente.origen,
 
+      metodoEntrega,
 
 
 
 
 
 
-                uidCliente:
 
+      comentario = ""
 
 
-                  datosCliente.uidCliente,
 
 
 
 
 
+    ) => {
 
 
-                nombreCliente:
 
 
 
-                  datosCliente.nombreCliente,
 
 
 
@@ -2630,11 +2461,10 @@ function Carrito() {
 
 
 
-                celularCliente:
 
 
 
-                  datosCliente.celularCliente,
+      if (
 
 
 
@@ -2642,23 +2472,21 @@ function Carrito() {
 
 
 
-                emailCliente:
+        carrito.length === 0
 
 
 
-                  datosCliente.emailCliente,
 
 
 
 
+      ) {
 
 
 
-                pedidoId:
 
 
 
-                  pedidoRef.id,
 
 
 
@@ -2666,35 +2494,32 @@ function Carrito() {
 
 
 
-                asunto:
 
 
+        setMensajeModal(
 
-                  "Acordar medio de envío",
 
 
 
 
 
 
+          "El carrito está vacío."
 
-                ultimoMensaje:
 
 
 
-                  textoInicial,
 
 
 
+        );
 
 
 
 
-                estado:
 
 
 
-                  "Esperando admin",
 
 
 
@@ -2702,11 +2527,10 @@ function Carrito() {
 
 
 
-                esperando:
 
+        return;
 
 
-                  "admin",
 
 
 
@@ -2714,23 +2538,20 @@ function Carrito() {
 
 
 
-                noLeidosAdmin:
 
 
 
-                  1,
 
 
 
+      }
 
 
 
 
-                noLeidosCliente:
 
 
 
-                  0,
 
 
 
@@ -2738,35 +2559,32 @@ function Carrito() {
 
 
 
-                metodoEntrega:
 
 
 
-                  "Por definir",
 
 
 
 
 
 
+      if (
 
-                costoEnvio:
 
 
 
-                  0,
 
 
 
+        !validarDatosCliente()
 
 
 
 
-                creado:
 
 
 
-                  serverTimestamp(),
+      ) {
 
 
 
@@ -2774,19 +2592,16 @@ function Carrito() {
 
 
 
-                actualizado:
 
 
 
-                  serverTimestamp()
 
 
 
-              }
 
 
+        return;
 
-            );
 
 
 
@@ -2798,15 +2613,13 @@ function Carrito() {
 
 
 
-          // =============================================
 
 
 
-          // PRIMER MENSAJE
+      }
 
 
 
-          // =============================================
 
 
 
@@ -2814,55 +2627,46 @@ function Carrito() {
 
 
 
-          await addDoc(
 
 
 
-            collection(
 
 
 
-              db,
 
 
 
-              "conversaciones",
 
 
 
-              conversacionRef.id,
 
+      try {
 
 
-              "mensajes"
 
 
 
-            ),
 
 
 
-            {
 
 
 
-              autor:
 
 
 
-                "cliente",
 
+        setEnviandoPedido(true);
 
 
 
 
 
 
-              remitente:
 
+        setMensajeModal("");
 
 
-                "cliente",
 
 
 
@@ -2870,11 +2674,9 @@ function Carrito() {
 
 
 
-              texto:
 
 
 
-                textoInicial,
 
 
 
@@ -2882,27 +2684,24 @@ function Carrito() {
 
 
 
-              creado:
 
 
 
-                serverTimestamp()
 
+        const datosCliente =
 
 
-            }
 
 
 
-          );
 
 
+          obtenerDatosCliente();
 
 
 
 
 
-        }
 
 
 
@@ -2914,35 +2713,31 @@ function Carrito() {
 
 
 
-        // ===============================================
 
 
 
-        // MENSAJE FINAL
 
 
 
-        // ===============================================
 
+        // ===============================================
 
 
 
 
 
 
-        if (
 
+        // GUARDAR PEDIDO
 
 
-          metodoEntrega ===
 
 
 
-          "pickup"
 
 
+        // ===============================================
 
-        ) {
 
 
 
@@ -2950,49 +2745,46 @@ function Carrito() {
 
 
 
-          setMensajeModal(
 
 
 
-            "Pedido registrado correctamente. Has seleccionado recogerlo en el punto de entrega."
 
 
 
-          );
 
+        const pedidoRef =
 
 
 
 
 
 
-        } else {
 
+          await addDoc(
 
 
 
 
 
 
-          setMensajeModal(
 
+            collection(
 
 
-            "Pedido registrado correctamente. Tu solicitud de envío fue enviada. Podremos responderte por la aplicación o contactarte por WhatsApp."
 
 
 
-          );
 
 
+              db,
 
 
 
 
 
-        }
 
 
+              "pedidos"
 
 
 
@@ -3000,25 +2792,24 @@ function Carrito() {
 
 
 
+            ),
 
 
-        // ===============================================
 
 
 
-        // VACIAR CARRITO
 
 
+            {
 
-        // ===============================================
 
 
 
 
 
 
+              ...datosCliente,
 
-        setCarrito([]);
 
 
 
@@ -3026,9 +2817,6 @@ function Carrito() {
 
 
 
-        localStorage.removeItem(
-          obtenerClaveCarritoUsuario(usuario.uid)
-        );
 
 
 
@@ -3036,14 +2824,15 @@ function Carrito() {
 
 
 
+              productos:
 
 
 
 
-        setComentarioEnvio("");
 
 
 
+                carrito.map(
 
 
 
@@ -3051,28 +2840,26 @@ function Carrito() {
 
 
 
+                  (producto) => ({
 
-      } catch (error) {
 
 
 
 
 
 
+                    id:
 
-        console.error(
 
 
 
-          "Error creando pedido:",
 
 
 
-          error
+                      producto.id,
 
 
 
-        );
 
 
 
@@ -3084,17 +2871,16 @@ function Carrito() {
 
 
 
-        setMensajeModal(
 
+                    nombre:
 
 
-          "No fue posible registrar el pedido. Intenta nuevamente."
 
 
 
-        );
 
 
+                      producto.nombre,
 
 
 
@@ -3104,87 +2890,83 @@ function Carrito() {
 
 
 
-      } finally {
 
 
 
 
 
 
+                    precio:
 
-        setEnviandoPedido(false);
 
 
 
 
 
 
+                      Number(
 
-      }
 
 
 
 
 
 
+                        producto.precio
 
-    };
 
 
 
 
 
 
+                      ),
 
 
 
 
 
-  // =====================================================
 
 
 
-  // ENVIAR SOLICITUD DE ENVÍO
 
 
 
-  // =====================================================
 
 
 
 
+                    cantidad:
 
 
 
-  const enviarSolicitudEnvio =
 
 
 
-    async () => {
 
+                      Number(
 
 
 
 
 
 
-      const comentario =
 
+                        producto.cantidad
 
 
-        comentarioEnvio.trim();
 
 
 
 
 
+                      ),
 
 
 
 
 
 
-      if (!comentario) {
 
 
 
@@ -3192,31 +2974,29 @@ function Carrito() {
 
 
 
-        setMensajeModal(
 
 
+                    peso:
 
-          "Escribe un comentario para solicitar el envío."
 
 
 
-        );
 
 
 
+                      producto.peso ||
 
 
 
 
-        return;
 
 
 
+                      "500 g",
 
 
 
 
-      }
 
 
 
@@ -3228,79 +3008,74 @@ function Carrito() {
 
 
 
-      await crearPedido(
+                    subtotal:
 
 
 
-        "acordar_envio",
 
 
 
-        comentario
 
+                      Number(
 
 
-      );
 
 
 
 
 
+                        producto.precio
 
 
-    };
 
 
 
 
 
+                      ) *
 
 
 
 
 
 
-  // =====================================================
 
+                      Number(
 
 
-  // CONFIRMAR RECOGIDA
 
 
 
-  // =====================================================
 
 
+                        producto.cantidad
 
 
 
 
 
-  const confirmarPickup =
 
 
+                      )
 
-    async () => {
 
 
 
 
 
 
+                  })
 
-      await crearPedido(
 
 
 
-        "pickup",
 
 
 
-        "Cliente recogerá el pedido en el punto de entrega."
+                ),
 
 
 
-      );
 
 
 
@@ -3308,27 +3083,25 @@ function Carrito() {
 
 
 
-    };
 
 
 
 
 
+              cantidadProductos:
 
 
 
 
 
 
-  // =====================================================
 
+                totalProductos,
 
 
-  // INTERFAZ
 
 
 
-  // =====================================================
 
 
 
@@ -3336,18 +3109,18 @@ function Carrito() {
 
 
 
-  return (
 
 
 
+              subtotal:
 
 
 
 
-    \<div className="carrito-page">
 
 
 
+                total,
 
 
 
@@ -3356,24 +3129,22 @@ function Carrito() {
 
 
 
-      {/\* =================================================
 
 
 
-          ENCABEZADO
 
 
 
-      ================================================= \*/}
 
+              total:
 
 
 
 
 
 
-      \<div className="carrito-titulo">
 
+                total,
 
 
 
@@ -3384,23 +3155,21 @@ function Carrito() {
 
 
 
-        \<div>
 
 
 
 
 
+              costoEnvio:
 
 
-          \<h1>
 
 
 
-            Mi carrito
 
 
+                0,
 
-          \</h1>
 
 
 
@@ -3412,19 +3181,16 @@ function Carrito() {
 
 
 
-          \<p>
 
 
 
-            Revisa tus cafés antes de finalizar
+              metodoEntrega,
 
 
 
-            la compra.
 
 
 
-          \</p>
 
 
 
@@ -3432,9 +3198,9 @@ function Carrito() {
 
 
 
-        \</div>
 
 
+              comentarioEntrega:
 
 
 
@@ -3442,13 +3208,11 @@ function Carrito() {
 
 
 
+                comentario,
 
 
-        {usuario &&
 
-          !usuario.isAnonymous &&
 
-          carrito.length > 0 && (
 
 
 
@@ -3456,31 +3220,27 @@ function Carrito() {
 
 
 
-          \<button
 
 
 
-            type="button"
 
+              estado:
 
 
-            className="btn-vaciar"
 
 
 
-            onClick={vaciarCarrito}
 
 
+                metodoEntrega ===
 
-          >
 
 
 
-            Vaciar carrito
 
 
 
-          \</button>
+                "pickup"
 
 
 
@@ -3488,7 +3248,7 @@ function Carrito() {
 
 
 
-        )}
+                  ? "Pendiente"
 
 
 
@@ -3496,11 +3256,11 @@ function Carrito() {
 
 
 
+                  : "Pendiente de acordar envío",
 
 
 
 
-      \</div>
 
 
 
@@ -3512,65 +3272,55 @@ function Carrito() {
 
 
 
-      {/\* =================================================
+              creado:
 
 
 
-          CARRITO
 
 
 
-      ================================================= \*/}
 
+                serverTimestamp(),
 
 
 
 
 
 
-      {(!usuario || usuario.isAnonymous) ? (
 
 
 
-          \<div className="carrito-vacio">
 
 
 
-            \<h2>
 
-              Inicia sesión para ver tu carrito
 
-            \</h2>
 
+              actualizado:
 
 
-            \<p>
 
-              Para proteger tu pedido, inicia sesión
 
-              o crea una cuenta para acceder a los
 
-              productos guardados.
 
-            \</p>
 
+                serverTimestamp()
 
 
-          \</div>
 
 
 
-        ) : carrito.length === 0 ? (
 
 
+            }
 
 
 
 
 
-        \<div className="carrito-vacio">
 
 
+          );
 
 
 
@@ -3580,15 +3330,12 @@ function Carrito() {
 
 
 
-          \<h2>
 
 
 
-            Tu carrito está vacío
 
 
 
-          \</h2>
 
 
 
@@ -3597,51 +3344,47 @@ function Carrito() {
 
 
 
+        // ===============================================
 
 
 
-          \<p>
 
 
 
-            Todavía no has agregado ningún café.
 
+        // CREAR CONVERSACIÓN SI ES ENVÍO
 
 
-          \</p>
 
 
 
 
 
+        // ===============================================
 
 
 
 
 
 
-          \<Link
 
 
 
-            to="/"
 
 
 
-            className="btn-volver-comprar"
 
 
 
-          >
+        if (
 
 
 
-            Ver nuestros cafés
 
 
 
-          \</Link>
 
+          metodoEntrega ===
 
 
 
@@ -3649,18 +3392,18 @@ function Carrito() {
 
 
 
+          "acordar_envio"
 
 
 
-        \</div>
 
 
 
 
+        ) {
 
 
 
-      ) : (
 
 
 
@@ -3668,35 +3411,33 @@ function Carrito() {
 
 
 
-        \<div className="carrito-contenedor">
 
 
 
 
 
+          const textoInicial =
 
 
 
 
 
 
-          {/\* ===============================================
 
+            comentario ||
 
 
-              PRODUCTOS
 
 
 
-          =============================================== \*/}
 
 
+            "Quiero acordar el medio y costo del envío.";
 
 
 
 
 
-          \<div className="carrito-lista">
 
 
 
@@ -3708,33 +3449,30 @@ function Carrito() {
 
 
 
-            {carrito.map(
 
 
 
-              (producto) => (
 
 
 
 
+          const conversacionRef =
 
 
 
-              \<div
 
 
 
-                className="carrito-producto"
 
+            await addDoc(
 
 
-                key={producto.id}
 
 
 
-              >
 
 
+              collection(
 
 
 
@@ -3742,53 +3480,51 @@ function Carrito() {
 
 
 
+                db,
 
 
-                {producto.imagen && (
 
 
 
 
 
+                "conversaciones"
 
 
-                  \<div className="producto-imagen">
 
 
 
 
 
+              ),
 
 
-                    \<img
 
 
 
-                      src={producto.imagen}
 
 
+              {
 
-                      alt={producto.nombre}
 
 
 
-                    />
 
 
 
+                tipo:
 
 
 
 
-                  \</div>
 
 
 
+                  "envio",
 
 
 
 
-                )}
 
 
 
@@ -3800,7 +3536,7 @@ function Carrito() {
 
 
 
-                \<div className="producto-info">
+                origen:
 
 
 
@@ -3808,58 +3544,55 @@ function Carrito() {
 
 
 
+                  datosCliente.origen,
 
 
 
 
-                  \<h2>
 
 
 
-                    {producto.nombre}
 
 
 
-                  \</h2>
 
 
 
 
 
+                uidCliente:
 
 
 
 
 
 
-                  {producto.descripcion && (
 
+                  datosCliente.uidCliente,
 
 
 
 
 
 
-                    \<p>
 
 
 
-                      {producto.descripcion}
 
 
 
-                    \</p>
 
 
 
+                nombreCliente:
 
 
 
 
-                  )}
 
 
 
+                  datosCliente.nombreCliente,
 
 
 
@@ -3868,7 +3601,6 @@ function Carrito() {
 
 
 
-                  {producto.peso && (
 
 
 
@@ -3876,23 +3608,21 @@ function Carrito() {
 
 
 
-                    \<p>
+                celularCliente:
 
 
 
-                      Presentación: {producto.peso}
 
 
 
-                    \</p>
 
+                  datosCliente.celularCliente,
 
 
 
 
 
 
-                  )}
 
 
 
@@ -3902,25 +3632,23 @@ function Carrito() {
 
 
 
+                emailCliente:
 
 
-                  \<strong>
 
 
 
 
 
+                  datosCliente.emailCliente,
 
 
-                    {formatoPrecio(
 
 
 
-                      producto.precio
 
 
 
-                    )}
 
 
 
@@ -3928,7 +3656,7 @@ function Carrito() {
 
 
 
-                  \</strong>
+                pedidoId:
 
 
 
@@ -3936,11 +3664,11 @@ function Carrito() {
 
 
 
+                  pedidoRef.id,
 
 
 
 
-                \</div>
 
 
 
@@ -3952,7 +3680,7 @@ function Carrito() {
 
 
 
-                {/\* CANTIDAD \*/}
+                asunto:
 
 
 
@@ -3960,7 +3688,7 @@ function Carrito() {
 
 
 
-                \<div className="producto-cantidad">
+                  "Acordar medio de envío",
 
 
 
@@ -3972,67 +3700,59 @@ function Carrito() {
 
 
 
-                  \<button
 
 
 
-                    type="button"
 
+                ultimoMensaje:
 
 
-                    onClick={() =>
 
 
 
-                      disminuirCantidad(
 
 
+                  textoInicial,
 
-                        producto.id
 
 
 
-                      )
 
 
 
-                    }
 
 
 
-                  >
 
 
 
-                    -
 
 
+                estado:
 
-                  \</button>
 
 
 
 
 
 
+                  "Esperando admin",
 
 
 
 
 
-                  \<span>
 
 
 
-                    {producto.cantidad}
 
 
 
-                  \</span>
 
 
 
 
+                esperando:
 
 
 
@@ -4040,43 +3760,36 @@ function Carrito() {
 
 
 
-                  \<button
+                  "admin",
 
 
 
-                    type="button"
 
 
 
-                    onClick={() =>
 
 
 
-                      aumentarCantidad(
 
 
 
-                        producto.id
 
 
 
-                      )
+                noLeidosAdmin:
 
 
 
-                    }
 
 
 
-                  >
 
+                  1,
 
 
-                    +
 
 
 
-                  \</button>
 
 
 
@@ -4087,20 +3800,20 @@ function Carrito() {
 
 
 
+                noLeidosCliente:
 
-                \</div>
 
 
 
 
 
 
+                  0,
 
 
 
 
 
-                {/\* TOTAL \*/}
 
 
 
@@ -4108,10 +3821,10 @@ function Carrito() {
 
 
 
-                \<div className="producto-total">
 
 
 
+                metodoEntrega:
 
 
 
@@ -4119,8 +3832,8 @@ function Carrito() {
 
 
 
+                  "Por definir",
 
-                  \<strong>
 
 
 
@@ -4128,27 +3841,24 @@ function Carrito() {
 
 
 
-                    {formatoPrecio(
 
 
 
-                      producto.precio \*
 
 
 
-                      producto.cantidad
 
+                costoEnvio:
 
 
-                    )}
 
 
 
 
 
+                  0,
 
 
-                  \</strong>
 
 
 
@@ -4160,48 +3870,41 @@ function Carrito() {
 
 
 
-                  \<button
 
 
+                creado:
 
-                    type="button"
 
 
 
-                    className="btn-eliminar"
 
 
 
-                    onClick={() =>
+                  serverTimestamp(),
 
 
 
-                      eliminarProducto(
 
 
 
-                        producto.id
 
 
 
-                      )
 
 
 
-                    }
 
 
 
-                  >
+                actualizado:
 
 
 
-                    Eliminar
 
 
 
-                  \</button>
 
+                  serverTimestamp()
 
 
 
@@ -4209,14 +3912,15 @@ function Carrito() {
 
 
 
+              }
 
 
 
-                \</div>
 
 
 
 
+            );
 
 
 
@@ -4224,7 +3928,6 @@ function Carrito() {
 
 
 
-              \</div>
 
 
 
@@ -4232,7 +3935,6 @@ function Carrito() {
 
 
 
-            ))}
 
 
 
@@ -4242,29 +3944,28 @@ function Carrito() {
 
 
 
+          // =============================================
 
 
-          \</div>
 
 
 
 
 
+          // PRIMER MENSAJE
 
 
 
 
 
 
-          {/\* ===============================================
 
+          // =============================================
 
 
-              RESUMEN
 
 
 
-          =============================================== \*/}
 
 
 
@@ -4272,10 +3973,10 @@ function Carrito() {
 
 
 
-          \<div className="carrito-resumen">
 
 
 
+          await addDoc(
 
 
 
@@ -4283,16 +3984,15 @@ function Carrito() {
 
 
 
+            collection(
 
-            \<h2>
 
 
 
-              Resumen de compra
 
 
 
-            \</h2>
+              db,
 
 
 
@@ -4300,63 +4000,61 @@ function Carrito() {
 
 
 
+              "conversaciones",
 
 
 
 
-            \<div className="resumen-fila">
 
 
 
+              conversacionRef.id,
 
 
 
 
-              \<span>
 
 
 
-                Productos
+              "mensajes"
 
 
 
-              \</span>
 
 
 
 
+            ),
 
 
 
-              \<span>
 
 
 
-                {totalProductos}
 
+            {
 
 
-              \</span>
 
 
 
 
 
+              autor:
 
 
-            \</div>
 
 
 
 
 
+                "cliente",
 
 
 
 
 
 
-            \<div className="resumen-fila">
 
 
 
@@ -4364,62 +4062,57 @@ function Carrito() {
 
 
 
-              \<span>
 
 
+              remitente:
 
-                Subtotal
 
 
 
-              \</span>
 
 
 
+                "cliente",
 
 
 
 
-              \<span>
 
 
 
-                {formatoPrecio(total)}
 
 
 
-              \</span>
 
 
 
 
 
+              texto:
 
 
-            \</div>
 
 
 
 
 
+                textoInicial,
 
 
 
 
 
 
-            \<p className="texto-envio">
 
 
 
-              El costo del envío está por definir.
 
 
 
-            \</p>
 
 
 
+              creado:
 
 
 
@@ -4427,24 +4120,23 @@ function Carrito() {
 
 
 
+                serverTimestamp()
 
-            \<div className="resumen-total">
 
 
 
 
 
 
+            }
 
-              \<span>
 
 
 
-                Total actual
 
 
 
-              \</span>
+          );
 
 
 
@@ -4452,23 +4144,20 @@ function Carrito() {
 
 
 
-              \<strong>
 
 
 
-                {formatoPrecio(total)}
 
 
 
-              \</strong>
 
 
+        }
 
 
 
 
 
-            \</div>
 
 
 
@@ -4480,61 +4169,54 @@ function Carrito() {
 
 
 
-            \<button
 
 
 
-              type="button"
 
 
 
-              className="btn-finalizar"
 
+        // ===============================================
 
 
-              onClick={abrirModalEnvio}
 
 
 
-              disabled={cargandoUsuario}
 
 
+        // MENSAJE FINAL
 
-            >
 
 
 
 
 
 
+        // ===============================================
 
-              {
 
 
 
-                cargandoUsuario
 
 
 
-                  ? "Cargando..."
 
 
 
-                  : "Finalizar compra"
 
 
 
-              }
 
 
+        if (
 
 
 
 
 
-            \</button>
 
 
+          metodoEntrega ===
 
 
 
@@ -4542,42 +4224,39 @@ function Carrito() {
 
 
 
+          "pickup"
 
 
-            \<Link
 
 
 
-              to="/"
 
 
+        ) {
 
-              className="seguir-comprando"
 
 
 
-            >
 
 
 
-              Seguir comprando
 
 
 
-            \</Link>
 
 
 
 
 
+          setMensajeModal(
 
 
 
 
 
 
-          \</div>
 
+            "Pedido registrado correctamente. Has seleccionado recogerlo en el punto de entrega."
 
 
 
@@ -4585,10 +4264,10 @@ function Carrito() {
 
 
 
+          );
 
 
 
-        \</div>
 
 
 
@@ -4596,137 +4275,101 @@ function Carrito() {
 
 
 
-      )}
 
 
 
 
 
+        } else {
 
 
 
 
 
 
-            {/\* =================================================
 
-          MODAL LOGIN / REGISTRO
 
-      ================================================= \*/}
 
 
 
-      {mostrarModalLogin && (
 
 
 
-        \<div className="modal-overlay">
 
+          setMensajeModal(
 
 
-          \<div className="modal-envio">
 
 
 
-            \<h2>
 
-              Inicia sesión para ver tu carrito
 
-            \</h2>
+            "Pedido registrado correctamente. Tu solicitud de envío fue enviada. Podremos responderte por la aplicación o contactarte por WhatsApp."
 
 
 
-            \<p className="modal-envio-destacado">
 
-              Tu carrito está protegido.
 
-            \</p>
 
 
+          );
 
-            \<p>
 
-              Debes iniciar sesión con tu cuenta o
 
-              registrarte para ver los productos
 
-              guardados y continuar con tu pedido.
 
-            \</p>
 
 
 
-            \<div className="modal-envio-opciones">
 
 
 
-              \<Link
 
-                to="/login"
 
-                className="btn-acordar-envio"
 
-                onClick={() =>
 
-                  setMostrarModalLogin(false)
+        }
 
-                }
 
-              >
 
-                Iniciar sesión
 
-              \</Link>
 
 
 
-              \<Link
 
-                to="/register"
 
-                className="btn-pickup"
 
-                onClick={() =>
 
-                  setMostrarModalLogin(false)
 
-                }
 
-              >
 
-                Registrarse
 
-              \</Link>
 
 
 
-            \</div>
 
 
 
-          \</div>
 
 
+        // ===============================================
 
-        \</div>
 
 
 
-      )}
 
 
 
+        // VACIAR CARRITO
 
 
-{/\* =================================================
 
 
 
-          MODAL ENTREGA
 
 
+        // ===============================================
 
-      ================================================= \*/}
 
 
 
@@ -4734,7 +4377,6 @@ function Carrito() {
 
 
 
-      {mostrarModalEnvio && (
 
 
 
@@ -4742,7 +4384,7 @@ function Carrito() {
 
 
 
-        \<div className="modal-overlay">
+        setCarrito([]);
 
 
 
@@ -4754,19 +4396,20 @@ function Carrito() {
 
 
 
-          \<div className="modal-envio">
 
 
 
 
+        localStorage.removeItem(
 
+          obtenerClaveCarritoUsuario(usuario.uid)
 
+        );
 
 
 
 
 
-            {/\* CERRAR \*/}
 
 
 
@@ -4774,35 +4417,28 @@ function Carrito() {
 
 
 
-            \<button
 
 
 
-              type="button"
 
 
 
-              className="modal-cerrar"
 
 
 
-              onClick={cerrarModalEnvio}
 
 
+        setComentarioEnvio("");
 
-              aria-label="Cerrar"
 
 
 
-            >
 
 
 
-              ×
 
 
 
-            \</button>
 
 
 
@@ -4814,15 +4450,13 @@ function Carrito() {
 
 
 
-            \<h2>
 
 
+      } catch (error) {
 
-              Información de entrega
 
 
 
-            \</h2>
 
 
 
@@ -4834,16 +4468,15 @@ function Carrito() {
 
 
 
-            \<p className="modal-envio-destacado">
+        console.error(
 
 
 
-              El precio del envío todavía está por definir.
 
 
 
-            \</p>
 
+          "Error creando pedido:",
 
 
 
@@ -4851,26 +4484,23 @@ function Carrito() {
 
 
 
+          error
 
 
 
-            \<p>
 
 
 
-              Puedes hablar directamente con nosotros
 
+        );
 
 
-              para acordar el método y el valor de la
 
 
 
-              entrega.
 
 
 
-            \</p>
 
 
 
@@ -4882,31 +4512,29 @@ function Carrito() {
 
 
 
-            {/\* =============================================
 
 
 
-                DATOS VISITANTE
 
+        setMensajeModal(
 
 
-            ============================================= \*/}
 
 
 
 
 
+          "No fue posible registrar el pedido. Intenta nuevamente."
 
 
-            {!perfil && (
 
 
 
 
 
+        );
 
 
-              \<div className="datos-visitante-pedido">
 
 
 
@@ -4918,19 +4546,17 @@ function Carrito() {
 
 
 
-                \<h3>
 
 
 
-                  Datos de contacto
 
 
 
-                \</h3>
 
 
 
 
+      } finally {
 
 
 
@@ -4938,23 +4564,19 @@ function Carrito() {
 
 
 
-                \<p>
 
 
 
-                  Necesitamos tu nombre y celular para
 
 
 
-                  identificar el pedido y poder contactarte
 
 
+        setEnviandoPedido(false);
 
-                  por WhatsApp si es necesario.
 
 
 
-                \</p>
 
 
 
@@ -4966,7 +4588,7 @@ function Carrito() {
 
 
 
-                \<div className="campo-visitante">
+      }
 
 
 
@@ -4974,67 +4596,57 @@ function Carrito() {
 
 
 
-                  \<label>
 
 
 
-                    Nombre
 
 
 
-                  \</label>
 
 
+    };
 
 
 
 
 
-                  \<input
 
 
 
-                    type="text"
 
 
 
-                    placeholder="Tu nombre"
 
 
 
-                    value={nombreVisitante}
 
 
 
-                    onChange={(e) =>
 
 
 
-                      setNombreVisitante(
 
 
 
-                        e.target.value
+  // =====================================================
 
 
 
-                      )
 
 
 
-                    }
 
+  // ENVIAR SOLICITUD DE ENVÍO
 
 
-                  />
 
 
 
 
 
+  // =====================================================
 
 
-                \</div>
 
 
 
@@ -5046,23 +4658,21 @@ function Carrito() {
 
 
 
-                \<div className="campo-visitante">
 
 
+  const enviarSolicitudEnvio =
 
 
 
 
 
-                  \<label>
 
 
+    async () => {
 
-                    Celular / WhatsApp
 
 
 
-                  \</label>
 
 
 
@@ -5070,59 +4680,49 @@ function Carrito() {
 
 
 
-                  \<input
 
 
 
-                    type="tel"
 
+      const comentario =
 
 
-                    placeholder="3001234567"
 
 
 
-                    value={celularVisitante}
 
 
+        comentarioEnvio.trim();
 
-                    onChange={(e) =>
 
 
 
-                      setCelularVisitante(
 
 
 
-                        e.target.value
 
 
 
-                      )
 
 
 
-                    }
 
 
 
-                    maxLength={10}
 
 
 
-                    inputMode="numeric"
 
 
 
-                  />
 
+      if (!comentario) {
 
 
 
 
 
 
-                \</div>
 
 
 
@@ -5132,45 +4732,43 @@ function Carrito() {
 
 
 
+        setMensajeModal(
 
 
-              \</div>
 
 
 
 
 
+          "Escribe un comentario para solicitar el envío."
 
 
-            )}
 
 
 
 
 
+        );
 
 
 
 
 
 
-            {/\* =============================================
 
 
 
-                CLIENTE REGISTRADO
 
 
 
-            ============================================= \*/}
 
 
 
+        return;
 
 
 
 
-            {perfil && (
 
 
 
@@ -5178,11 +4776,11 @@ function Carrito() {
 
 
 
-              \<div className="datos-cliente-pedido">
 
 
 
 
+      }
 
 
 
@@ -5190,15 +4788,12 @@ function Carrito() {
 
 
 
-                \<strong>
 
 
 
-                  {perfil.nombre}
 
 
 
-                \</strong>
 
 
 
@@ -5209,16 +4804,15 @@ function Carrito() {
 
 
 
+      await crearPedido(
 
-                \<span>
 
 
 
-                  {perfil.celular}
 
 
 
-                \</span>
+        "acordar_envio",
 
 
 
@@ -5226,19 +4820,18 @@ function Carrito() {
 
 
 
+        comentario
 
 
 
 
-                \<small>
 
 
 
-                  Usaremos los datos registrados en tu cuenta.
+      );
 
 
 
-                \</small>
 
 
 
@@ -5250,15 +4843,14 @@ function Carrito() {
 
 
 
-              \</div>
 
+    };
 
 
 
 
 
 
-            )}
 
 
 
@@ -5270,15 +4862,13 @@ function Carrito() {
 
 
 
-            {/\* =============================================
 
 
 
-                OPCIONES
 
 
 
-            ============================================= \*/}
+  // =====================================================
 
 
 
@@ -5286,7 +4876,7 @@ function Carrito() {
 
 
 
-            {!modoEnvio && (
+  // CONFIRMAR RECOGIDA
 
 
 
@@ -5294,7 +4884,7 @@ function Carrito() {
 
 
 
-              \<div className="modal-envio-opciones">
+  // =====================================================
 
 
 
@@ -5306,31 +4896,26 @@ function Carrito() {
 
 
 
-                \<button
 
 
 
-                  type="button"
 
+  const confirmarPickup =
 
 
-                  className="btn-acordar-envio"
 
 
 
-                  onClick={seleccionarAcordarEnvio}
 
 
+    async () => {
 
-                >
 
 
 
-                  🚚 Acordar precio de envío
 
 
 
-                \</button>
 
 
 
@@ -5339,34 +4924,31 @@ function Carrito() {
 
 
 
+      await crearPedido(
 
 
 
-                \<button
 
 
 
-                  type="button"
 
+        "pickup",
 
 
-                  className="btn-pickup"
 
 
 
-                  onClick={seleccionarPickup}
 
 
+        "Cliente recogerá el pedido en el punto de entrega."
 
-                >
 
 
 
-                  📦 Recoger en punto
 
 
 
-                \</button>
+      );
 
 
 
@@ -5378,15 +4960,14 @@ function Carrito() {
 
 
 
-              \</div>
 
 
 
 
+    };
 
 
 
-            )}
 
 
 
@@ -5398,27 +4979,24 @@ function Carrito() {
 
 
 
-            {/\* =============================================
 
 
 
-                ACORDAR ENVÍO
 
 
 
-            ============================================= \*/}
 
 
 
+  // =====================================================
 
 
 
 
-            {modoEnvio ===
 
 
 
-              "acordar" && (
+  // INTERFAZ
 
 
 
@@ -5426,7 +5004,7 @@ function Carrito() {
 
 
 
-              \<div className="solicitud-envio">
+  // =====================================================
 
 
 
@@ -5438,15 +5016,13 @@ function Carrito() {
 
 
 
-                \<h3>
 
 
 
-                  Solicitar envío
 
+  return (
 
 
-                \</h3>
 
 
 
@@ -5458,23 +5034,19 @@ function Carrito() {
 
 
 
-                \<p>
 
 
+    <div className="carrito-page">
 
-                  Cuéntanos dónde necesitas recibir
 
 
 
-                  tu pedido o cualquier información
 
 
 
-                  que nos ayude a calcular el envío.
 
 
 
-                \</p>
 
 
 
@@ -5486,39 +5058,33 @@ function Carrito() {
 
 
 
-                \<textarea
 
 
+      {/* =================================================
 
-                  value={comentarioEnvio}
 
 
 
-                  onChange={(e) =>
 
 
 
-                    setComentarioEnvio(
+          ENCABEZADO
 
 
 
-                      e.target.value
 
 
 
-                    )
 
+      ================================================= */}
 
 
-                  }
 
 
 
-                  placeholder="Ejemplo: Quiero envío a Suba, barrio La Campiña. ¿Cuánto cuesta?"
 
 
 
-                />
 
 
 
@@ -5526,27 +5092,23 @@ function Carrito() {
 
 
 
+      <div className="carrito-titulo">
 
 
 
 
-                \<p className="aviso-contacto-envio">
 
 
 
-                  Podremos responderte por medio de la
 
 
 
-                  aplicación o contactarte por WhatsApp,
 
 
 
-                  según lo que resulte más práctico.
 
 
 
-                \</p>
 
 
 
@@ -5554,11 +5116,11 @@ function Carrito() {
 
 
 
+        <div>
 
 
 
 
-                \<div className="solicitud-envio-botones">
 
 
 
@@ -5570,31 +5132,28 @@ function Carrito() {
 
 
 
-                  \<button
+          <h1>
 
 
 
-                    type="button"
 
 
 
-                    className="btn-volver-modal"
 
+            Mi carrito
 
 
-                    disabled={enviandoPedido}
 
 
 
-                    onClick={() => {
 
 
+          </h1>
 
 
 
 
 
-                      setModoEnvio(null);
 
 
 
@@ -5602,7 +5161,6 @@ function Carrito() {
 
 
 
-                      setMensajeModal("");
 
 
 
@@ -5610,21 +5168,19 @@ function Carrito() {
 
 
 
-                    }}
 
 
 
-                  >
 
+          <p>
 
 
-                    Volver
 
 
 
-                  \</button>
 
 
+            Revisa tus cafés antes de finalizar
 
 
 
@@ -5632,53 +5188,45 @@ function Carrito() {
 
 
 
+            la compra.
 
 
-                  \<button
 
 
 
-                    type="button"
 
 
+          </p>
 
-                    className="btn-enviar-solicitud"
 
 
 
-                    onClick={enviarSolicitudEnvio}
 
 
 
-                    disabled={enviandoPedido}
 
 
 
-                  >
 
 
 
 
 
+        </div>
 
 
-                    {
 
 
 
-                      enviandoPedido
 
 
 
-                        ? "Enviando..."
 
 
 
-                        : "Enviar solicitud"
 
 
 
-                    }
 
 
 
@@ -5686,19 +5234,20 @@ function Carrito() {
 
 
 
-                  \</button>
 
 
+        {usuario &&
 
 
 
+          !usuario.isAnonymous &&
 
 
 
+          carrito.length > 0 && (
 
 
 
-                \</div>
 
 
 
@@ -5710,16 +5259,16 @@ function Carrito() {
 
 
 
-              \</div>
 
+          <button
 
 
 
 
 
 
-            )}
 
+            type="button"
 
 
 
@@ -5727,40 +5276,39 @@ function Carrito() {
 
 
 
+            className="btn-vaciar"
 
 
 
-            {/\* =============================================
 
 
 
-                PICKUP
 
+            onClick={vaciarCarrito}
 
 
-            ============================================= \*/}
 
 
 
 
 
+          >
 
 
-            {modoEnvio ===
 
 
 
-              "pickup" && (
 
 
+            Vaciar carrito
 
 
 
 
 
-              \<div className="pickup-info">
 
 
+          </button>
 
 
 
@@ -5770,15 +5318,13 @@ function Carrito() {
 
 
 
-                \<h3>
 
 
 
-                  Recoger en punto
 
 
 
-                \</h3>
+        )}
 
 
 
@@ -5790,23 +5336,19 @@ function Carrito() {
 
 
 
-                \<p>
 
 
 
-                  No se agregará costo de envío.
 
 
 
-                  Puedes recoger tu pedido directamente
 
 
 
-                  en nuestro punto de entrega.
 
 
 
-                \</p>
+      </div>
 
 
 
@@ -5818,7 +5360,6 @@ function Carrito() {
 
 
 
-                \<div className="pickup-direccion">
 
 
 
@@ -5830,17 +5371,16 @@ function Carrito() {
 
 
 
-                  \<span className="pickup-icono">
 
+      {/* =================================================
 
 
-                    📍
 
 
 
-                  \</span>
 
 
+          CARRITO
 
 
 
@@ -5848,9 +5388,9 @@ function Carrito() {
 
 
 
+      ================================================= */}
 
 
-                  \<div>
 
 
 
@@ -5858,15 +5398,13 @@ function Carrito() {
 
 
 
-                    \<span className="pickup-label">
 
 
 
-                      Punto de recogida
 
 
 
-                    \</span>
+      {(!usuario || usuario.isAnonymous) ? (
 
 
 
@@ -5874,53 +5412,55 @@ function Carrito() {
 
 
 
-                    \<strong>
+          <div className="carrito-vacio">
 
 
 
-                      Calle 8A # 82-31
 
 
 
-                    \</strong>
 
+            <h2>
 
 
 
+              Inicia sesión para ver tu carrito
 
 
 
-                    \<span>
+            </h2>
 
 
 
-                      Bogotá, Colombia
 
 
 
-                    \</span>
 
+            <p>
 
 
 
+              Para proteger tu pedido, inicia sesión
 
 
 
-                  \</div>
+              o crea una cuenta para acceder a los
 
 
 
+              productos guardados.
 
 
 
+            </p>
 
 
 
 
 
-                \</div>
 
 
+          </div>
 
 
 
@@ -5928,37 +5468,31 @@ function Carrito() {
 
 
 
+        ) : carrito.length === 0 ? (
 
 
-                \<a
 
 
 
-                  href="https\://www\\.waze.com/ul?q=Calle%208A%20%23%2082-31%20Bogota%20Colombia&navigate=yes"
 
 
 
-                  target="\_blank"
 
 
 
-                  rel="noopener noreferrer"
 
 
 
-                  className="btn-waze"
 
+        <div className="carrito-vacio">
 
 
-                >
 
 
 
-                  🚗 Cómo llegar con Waze
 
 
 
-                \</a>
 
 
 
@@ -5970,51 +5504,43 @@ function Carrito() {
 
 
 
-                \<button
 
 
 
-                  type="button"
 
+          <h2>
 
 
-                  className="btn-confirmar-pickup"
 
 
 
-                  onClick={confirmarPickup}
 
 
+            Tu carrito está vacío
 
-                  disabled={enviandoPedido}
 
 
 
-                >
 
 
 
+          </h2>
 
 
 
 
-                  {
 
 
 
-                    enviandoPedido
 
 
 
-                      ? "Registrando pedido..."
 
 
 
-                      : "Confirmar pedido para recoger"
 
 
 
-                  }
 
 
 
@@ -6022,7 +5548,7 @@ function Carrito() {
 
 
 
-                \</button>
+          <p>
 
 
 
@@ -6030,27 +5556,24 @@ function Carrito() {
 
 
 
+            Todavía no has agregado ningún café.
 
 
 
 
-                \<button
 
 
 
-                  type="button"
+          </p>
 
 
 
-                  className="btn-volver-modal"
 
 
 
-                  disabled={enviandoPedido}
 
 
 
-                  onClick={() => {
 
 
 
@@ -6058,7 +5581,6 @@ function Carrito() {
 
 
 
-                    setModoEnvio(null);
 
 
 
@@ -6066,7 +5588,7 @@ function Carrito() {
 
 
 
-                    setMensajeModal("");
+          <Link
 
 
 
@@ -6074,40 +5596,39 @@ function Carrito() {
 
 
 
-                  }}
+            to="/"
 
 
 
-                >
 
 
 
-                  Cambiar opción
 
+            className="btn-volver-comprar"
 
 
-                \</button>
 
 
 
 
 
+          >
 
 
 
 
 
 
-              \</div>
 
+            Ver nuestros cafés
 
 
 
 
 
 
-            )}
 
+          </Link>
 
 
 
@@ -6118,15 +5639,12 @@ function Carrito() {
 
 
 
-            {/\* =============================================
 
 
 
-                MENSAJE
 
 
 
-            ============================================= \*/}
 
 
 
@@ -6134,7 +5652,7 @@ function Carrito() {
 
 
 
-            {mensajeModal && (
+        </div>
 
 
 
@@ -6142,7 +5660,6 @@ function Carrito() {
 
 
 
-              \<div className="mensaje-modal-envio">
 
 
 
@@ -6150,15 +5667,14 @@ function Carrito() {
 
 
 
-                {mensajeModal}
 
+      ) : (
 
 
 
 
 
 
-              \</div>
 
 
 
@@ -6166,9 +5682,9 @@ function Carrito() {
 
 
 
-            )}
 
 
+        <div className="carrito-contenedor">
 
 
 
@@ -6178,7 +5694,6 @@ function Carrito() {
 
 
 
-          \</div>
 
 
 
@@ -6190,18 +5705,18 @@ function Carrito() {
 
 
 
-        \</div>
 
 
 
+          {/* ===============================================
 
 
 
 
-      )}
 
 
 
+              PRODUCTOS
 
 
 
@@ -6209,8 +5724,8 @@ function Carrito() {
 
 
 
+          =============================================== */}
 
-    \</div>
 
 
 
@@ -6218,7 +5733,5066 @@ function Carrito() {
 
 
 
-  );
+
+
+
+
+
+
+
+          <div className="carrito-lista">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {carrito.map(
+
+
+
+
+
+
+
+              (producto) => (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div
+
+
+
+
+
+
+
+                className="carrito-producto"
+
+
+
+
+
+
+
+                key={producto.id}
+
+
+
+
+
+
+
+              >
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {producto.imagen && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <div className="producto-imagen">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <img
+
+
+
+
+
+
+
+                      src={producto.imagen}
+
+
+
+
+
+
+
+                      alt={producto.nombre}
+
+
+
+
+
+
+
+                    />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="producto-info">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <h2>
+
+
+
+
+
+
+
+                    {producto.nombre}
+
+
+
+
+
+
+
+                  </h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  {producto.descripcion && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <p>
+
+
+
+
+
+
+
+                      {producto.descripcion}
+
+
+
+
+
+
+
+                    </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  {producto.peso && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <p>
+
+
+
+
+
+
+
+                      Presentación: {producto.peso}
+
+
+
+
+
+
+
+                    </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {formatoPrecio(
+
+
+
+
+
+
+
+                      producto.precio
+
+
+
+
+
+
+
+                    )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  </strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* CANTIDAD */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="producto-cantidad">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+
+
+
+
+                    type="button"
+
+
+
+
+
+
+
+                    onClick={() =>
+
+
+
+
+
+
+
+                      disminuirCantidad(
+
+
+
+
+
+
+
+                        producto.id
+
+
+
+
+
+
+
+                      )
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                  >
+
+
+
+
+
+
+
+                    -
+
+
+
+
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <span>
+
+
+
+
+
+
+
+                    {producto.cantidad}
+
+
+
+
+
+
+
+                  </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+
+
+
+
+                    type="button"
+
+
+
+
+
+
+
+                    onClick={() =>
+
+
+
+
+
+
+
+                      aumentarCantidad(
+
+
+
+
+
+
+
+                        producto.id
+
+
+
+
+
+
+
+                      )
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                  >
+
+
+
+
+
+
+
+                    +
+
+
+
+
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* TOTAL */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="producto-total">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {formatoPrecio(
+
+
+
+
+
+
+
+                      producto.precio *
+
+
+
+
+
+
+
+                      producto.cantidad
+
+
+
+
+
+
+
+                    )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  </strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+
+
+
+
+                    type="button"
+
+
+
+
+
+
+
+                    className="btn-eliminar"
+
+
+
+
+
+
+
+                    onClick={() =>
+
+
+
+
+
+
+
+                      eliminarProducto(
+
+
+
+
+
+
+
+                        producto.id
+
+
+
+
+
+
+
+                      )
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                  >
+
+
+
+
+
+
+
+                    Eliminar
+
+
+
+
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ))}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          {/* ===============================================
+
+
+
+
+
+
+
+              RESUMEN
+
+
+
+
+
+
+
+          =============================================== */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <div className="carrito-resumen">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <h2>
+
+
+
+
+
+
+
+              Resumen de compra
+
+
+
+
+
+
+
+            </h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div className="resumen-fila">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <span>
+
+
+
+
+
+
+
+                Productos
+
+
+
+
+
+
+
+              </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <span>
+
+
+
+
+
+
+
+                {totalProductos}
+
+
+
+
+
+
+
+              </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div className="resumen-fila">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <span>
+
+
+
+
+
+
+
+                Subtotal
+
+
+
+
+
+
+
+              </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <span>
+
+
+
+
+
+
+
+                {formatoPrecio(total)}
+
+
+
+
+
+
+
+              </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <p className="texto-envio">
+
+
+
+
+
+
+
+              El costo del envío está por definir.
+
+
+
+
+
+
+
+            </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div className="resumen-total">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <span>
+
+
+
+
+
+
+
+                Total actual
+
+
+
+
+
+
+
+              </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <strong>
+
+
+
+
+
+
+
+                {formatoPrecio(total)}
+
+
+
+
+
+
+
+              </strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <button
+
+
+
+
+
+
+
+              type="button"
+
+
+
+
+
+
+
+              className="btn-finalizar"
+
+
+
+
+
+
+
+              onClick={abrirModalEnvio}
+
+
+
+
+
+
+
+              disabled={cargandoUsuario}
+
+
+
+
+
+
+
+            >
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              {
+
+
+
+
+
+
+
+                cargandoUsuario
+
+
+
+
+
+
+
+                  ? "Cargando..."
+
+
+
+
+
+
+
+                  : "Finalizar compra"
+
+
+
+
+
+
+
+              }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <Link
+
+
+
+
+
+
+
+              to="/"
+
+
+
+
+
+
+
+              className="seguir-comprando"
+
+
+
+
+
+
+
+            >
+
+
+
+
+
+
+
+              Seguir comprando
+
+
+
+
+
+
+
+            </Link>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =================================================
+
+
+
+          MODAL LOGIN / REGISTRO
+
+
+
+      ================================================= */}
+
+
+
+
+
+
+
+      {mostrarModalLogin && (
+
+
+
+
+
+
+
+        <div className="modal-overlay">
+
+
+
+
+
+
+
+          <div className="modal-envio">
+
+
+
+
+
+
+
+            <h2>
+
+
+
+              Inicia sesión para ver tu carrito
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <p className="modal-envio-destacado">
+
+
+
+              Tu carrito está protegido.
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <p>
+
+
+
+              Debes iniciar sesión con tu cuenta o
+
+
+
+              registrarte para ver los productos
+
+
+
+              guardados y continuar con tu pedido.
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <div className="modal-envio-opciones">
+
+
+
+
+
+
+
+              <Link
+
+
+
+                to="/login"
+
+
+
+                className="btn-acordar-envio"
+
+
+
+                onClick={() =>
+
+
+
+                  setMostrarModalLogin(false)
+
+
+
+                }
+
+
+
+              >
+
+
+
+                Iniciar sesión
+
+
+
+              </Link>
+
+
+
+
+
+
+
+              <Link
+
+
+
+                to="/register"
+
+
+
+                className="btn-pickup"
+
+
+
+                onClick={() =>
+
+
+
+                  setMostrarModalLogin(false)
+
+
+
+                }
+
+
+
+              >
+
+
+
+                Registrarse
+
+
+
+              </Link>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+      )}
+
+
+
+
+
+
+
+
+
+
+
+{/* =================================================
+
+
+
+
+
+
+
+          MODAL ENTREGA
+
+
+
+
+
+
+
+      ================================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {mostrarModalEnvio && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <div className="modal-overlay">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <div className="modal-envio">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* CERRAR */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <button
+
+
+
+
+
+
+
+              type="button"
+
+
+
+
+
+
+
+              className="modal-cerrar"
+
+
+
+
+
+
+
+              onClick={cerrarModalEnvio}
+
+
+
+
+
+
+
+              aria-label="Cerrar"
+
+
+
+
+
+
+
+            >
+
+
+
+
+
+
+
+              ×
+
+
+
+
+
+
+
+            </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <h2>
+
+
+
+
+
+
+
+              Información de entrega
+
+
+
+
+
+
+
+            </h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <p className="modal-envio-destacado">
+
+
+
+
+
+
+
+              El precio del envío todavía está por definir.
+
+
+
+
+
+
+
+            </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <p>
+
+
+
+
+
+
+
+              Puedes hablar directamente con nosotros
+
+
+
+
+
+
+
+              para acordar el método y el valor de la
+
+
+
+
+
+
+
+              entrega.
+
+
+
+
+
+
+
+            </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                DATOS VISITANTE
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {!perfil && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="datos-visitante-pedido">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <h3>
+
+
+
+
+
+
+
+                  Datos de contacto
+
+
+
+
+
+
+
+                </h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <p>
+
+
+
+
+
+
+
+                  Necesitamos tu nombre y celular para
+
+
+
+
+
+
+
+                  identificar el pedido y poder contactarte
+
+
+
+
+
+
+
+                  por WhatsApp si es necesario.
+
+
+
+
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="campo-visitante">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <label>
+
+
+
+
+
+
+
+                    Nombre
+
+
+
+
+
+
+
+                  </label>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <input
+
+
+
+
+
+
+
+                    type="text"
+
+
+
+
+
+
+
+                    placeholder="Tu nombre"
+
+
+
+
+
+
+
+                    value={nombreVisitante}
+
+
+
+
+
+
+
+                    onChange={(e) =>
+
+
+
+
+
+
+
+                      setNombreVisitante(
+
+
+
+
+
+
+
+                        e.target.value
+
+
+
+
+
+
+
+                      )
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                  />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="campo-visitante">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <label>
+
+
+
+
+
+
+
+                    Celular / WhatsApp
+
+
+
+
+
+
+
+                  </label>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <input
+
+
+
+
+
+
+
+                    type="tel"
+
+
+
+
+
+
+
+                    placeholder="3001234567"
+
+
+
+
+
+
+
+                    value={celularVisitante}
+
+
+
+
+
+
+
+                    onChange={(e) =>
+
+
+
+
+
+
+
+                      setCelularVisitante(
+
+
+
+
+
+
+
+                        e.target.value
+
+
+
+
+
+
+
+                      )
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                    maxLength={10}
+
+
+
+
+
+
+
+                    inputMode="numeric"
+
+
+
+
+
+
+
+                  />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                CLIENTE REGISTRADO
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {perfil && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="datos-cliente-pedido">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <strong>
+
+
+
+
+
+
+
+                  {perfil.nombre}
+
+
+
+
+
+
+
+                </strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <span>
+
+
+
+
+
+
+
+                  {perfil.celular}
+
+
+
+
+
+
+
+                </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <small>
+
+
+
+
+
+
+
+                  Usaremos los datos registrados en tu cuenta.
+
+
+
+
+
+
+
+                </small>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                OPCIONES
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {!modoEnvio && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="modal-envio-opciones">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <button
+
+
+
+
+
+
+
+                  type="button"
+
+
+
+
+
+
+
+                  className="btn-acordar-envio"
+
+
+
+
+
+
+
+                  onClick={seleccionarAcordarEnvio}
+
+
+
+
+
+
+
+                >
+
+
+
+
+
+
+
+                  🚚 Acordar precio de envío
+
+
+
+
+
+
+
+                </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <button
+
+
+
+
+
+
+
+                  type="button"
+
+
+
+
+
+
+
+                  className="btn-pickup"
+
+
+
+
+
+
+
+                  onClick={seleccionarPickup}
+
+
+
+
+
+
+
+                >
+
+
+
+
+
+
+
+                  📦 Recoger en punto
+
+
+
+
+
+
+
+                </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                ACORDAR ENVÍO
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {modoEnvio ===
+
+
+
+
+
+
+
+              "acordar" && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="solicitud-envio">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <h3>
+
+
+
+
+
+
+
+                  Solicitar envío
+
+
+
+
+
+
+
+                </h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <p>
+
+
+
+
+
+
+
+                  Cuéntanos dónde necesitas recibir
+
+
+
+
+
+
+
+                  tu pedido o cualquier información
+
+
+
+
+
+
+
+                  que nos ayude a calcular el envío.
+
+
+
+
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <textarea
+
+
+
+
+
+
+
+                  value={comentarioEnvio}
+
+
+
+
+
+
+
+                  onChange={(e) =>
+
+
+
+
+
+
+
+                    setComentarioEnvio(
+
+
+
+
+
+
+
+                      e.target.value
+
+
+
+
+
+
+
+                    )
+
+
+
+
+
+
+
+                  }
+
+
+
+
+
+
+
+                  placeholder="Ejemplo: Quiero envío a Suba, barrio La Campiña. ¿Cuánto cuesta?"
+
+
+
+
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <p className="aviso-contacto-envio">
+
+
+
+
+
+
+
+                  Podremos responderte por medio de la
+
+
+
+
+
+
+
+                  aplicación o contactarte por WhatsApp,
+
+
+
+
+
+
+
+                  según lo que resulte más práctico.
+
+
+
+
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="solicitud-envio-botones">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+
+
+
+
+                    type="button"
+
+
+
+
+
+
+
+                    className="btn-volver-modal"
+
+
+
+
+
+
+
+                    disabled={enviandoPedido}
+
+
+
+
+
+
+
+                    onClick={() => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      setModoEnvio(null);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      setMensajeModal("");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    }}
+
+
+
+
+
+
+
+                  >
+
+
+
+
+
+
+
+                    Volver
+
+
+
+
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <button
+
+
+
+
+
+
+
+                    type="button"
+
+
+
+
+
+
+
+                    className="btn-enviar-solicitud"
+
+
+
+
+
+
+
+                    onClick={enviarSolicitudEnvio}
+
+
+
+
+
+
+
+                    disabled={enviandoPedido}
+
+
+
+
+
+
+
+                  >
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {
+
+
+
+
+
+
+
+                      enviandoPedido
+
+
+
+
+
+
+
+                        ? "Enviando..."
+
+
+
+
+
+
+
+                        : "Enviar solicitud"
+
+
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                PICKUP
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {modoEnvio ===
+
+
+
+
+
+
+
+              "pickup" && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="pickup-info">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <h3>
+
+
+
+
+
+
+
+                  Recoger en punto
+
+
+
+
+
+
+
+                </h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <p>
+
+
+
+
+
+
+
+                  No se agregará costo de envío.
+
+
+
+
+
+
+
+                  Puedes recoger tu pedido directamente
+
+
+
+
+
+
+
+                  en nuestro punto de entrega.
+
+
+
+
+
+
+
+                </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="pickup-direccion">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <span className="pickup-icono">
+
+
+
+
+
+
+
+                    📍
+
+
+
+
+
+
+
+                  </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <span className="pickup-label">
+
+
+
+
+
+
+
+                      Punto de recogida
+
+
+
+
+
+
+
+                    </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <strong>
+
+
+
+
+
+
+
+                      Calle 8A # 82-31
+
+
+
+
+
+
+
+                    </strong>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <span>
+
+
+
+
+
+
+
+                      Bogotá, Colombia
+
+
+
+
+
+
+
+                    </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <a
+
+
+
+
+
+
+
+                  href="https://www.waze.com/ul?q=Calle%208A%20%23%2082-31%20Bogota%20Colombia&navigate=yes"
+
+
+
+
+
+
+
+                  target="_blank"
+
+
+
+
+
+
+
+                  rel="noopener noreferrer"
+
+
+
+
+
+
+
+                  className="btn-waze"
+
+
+
+
+
+
+
+                >
+
+
+
+
+
+
+
+                  🚗 Cómo llegar con Waze
+
+
+
+
+
+
+
+                </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <button
+
+
+
+
+
+
+
+                  type="button"
+
+
+
+
+
+
+
+                  className="btn-confirmar-pickup"
+
+
+
+
+
+
+
+                  onClick={confirmarPickup}
+
+
+
+
+
+
+
+                  disabled={enviandoPedido}
+
+
+
+
+
+
+
+                >
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  {
+
+
+
+
+
+
+
+                    enviandoPedido
+
+
+
+
+
+
+
+                      ? "Registrando pedido..."
+
+
+
+
+
+
+
+                      : "Confirmar pedido para recoger"
+
+
+
+
+
+
+
+                  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <button
+
+
+
+
+
+
+
+                  type="button"
+
+
+
+
+
+
+
+                  className="btn-volver-modal"
+
+
+
+
+
+
+
+                  disabled={enviandoPedido}
+
+
+
+
+
+
+
+                  onClick={() => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    setModoEnvio(null);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    setMensajeModal("");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  }}
+
+
+
+
+
+
+
+                >
+
+
+
+
+
+
+
+                  Cambiar opción
+
+
+
+
+
+
+
+                </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {/* =============================================
+
+
+
+
+
+
+
+                MENSAJE
+
+
+
+
+
+
+
+            ============================================= */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            {mensajeModal && (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className="mensaje-modal-envio">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {mensajeModal}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  );
+
+
+
+
+
+
+
+
 
 
 
@@ -6227,6 +10801,18 @@ function Carrito() {
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
